@@ -8,6 +8,7 @@ import { invalidState } from '../../app/constants';
 import { RootState } from '../../app/store';
 import { User } from '../../models/user';
 import { fetchAccountApi, loginApi, logoutApi } from './accountApi';
+import { Credentials } from './types';
 
 export interface AccountState {
   status: ApiCallState;
@@ -21,12 +22,17 @@ const initialState: AccountState = {
   isLoggedIn: hasAccessToken(),
 };
 
-export const login = createAsyncThunk('account/login', () => {
-  return loginApi;
-});
+export const login = createAsyncThunk(
+  'account/login',
+  (credentials: Credentials) => {
+    return loginApi(credentials).tapCatch((error) =>
+      console.error('thunk', error)
+    );
+  }
+);
 
 export const fetchAccount = createAsyncThunk('account/self', () => {
-  return fetchAccountApi;
+  return fetchAccountApi();
 });
 
 const accountSlice = createSlice({

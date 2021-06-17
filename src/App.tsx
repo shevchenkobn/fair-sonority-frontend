@@ -5,7 +5,8 @@ import {
   ListItemText,
   useTheme,
 } from '@material-ui/core';
-import React from 'react';
+import { ExitToApp } from '@material-ui/icons';
+import React, { CSSProperties } from 'react';
 import { map } from 'rxjs/operators';
 import { useAppSelector } from './app/hooks';
 import { logger } from './app/logger';
@@ -32,9 +33,16 @@ import Hidden from '@material-ui/core/Hidden';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import List from '@material-ui/core/List';
 import MailIcon from '@material-ui/icons/Mail';
-import { AppRoutes } from './AppRoutes';
+import { applyRouter, AppRoutes } from './routes/AppRoutes';
+import logo from './logo.svg';
+import { Link } from 'react-router-dom';
+import { loginPath } from './routes/constants';
 
 const drawerWidth = 240;
+
+const appBarHeight: CSSProperties = {
+  maxHeight: 64,
+};
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -69,10 +77,20 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: theme.spacing(0, 1),
       // necessary for content to be below app bar
       ...theme.mixins.toolbar,
+      ...appBarHeight,
       justifyContent: 'flex-end',
     },
     // necessary for content to be below app bar
-    toolbar: theme.mixins.toolbar,
+    toolbar: {
+      ...theme.mixins.toolbar,
+      ...appBarHeight,
+    },
+    logo: {
+      width: '100%',
+      maxWidth: '100%',
+      ...appBarHeight,
+      objectFit: 'cover',
+    },
     drawerPaper: {
       width: drawerWidth,
     },
@@ -123,36 +141,46 @@ function App() {
 
   const drawer = (
     <div>
-      <div className={classes.toolbar} />
+      <div className={classes.toolbar}>
+        <img src={logo} alt="FairSonority" className={classes.logo} />
+      </div>
       <Divider />
       <List>
-        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-          <ListItem button key={text}>
+        {auth ? null : (
+          <ListItem component={Link} button to={loginPath}>
             <ListItemIcon>
-              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+              <ExitToApp />
             </ListItemIcon>
-            <ListItemText primary={text} />
+            <ListItemText> Login</ListItemText>
           </ListItem>
-        ))}
+        )}
+        {/*{['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (*/}
+        {/*  <ListItem button key={text}>*/}
+        {/*    <ListItemIcon>*/}
+        {/*      {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}*/}
+        {/*    </ListItemIcon>*/}
+        {/*    <ListItemText primary={text} />*/}
+        {/*  </ListItem>*/}
+        {/*))}*/}
       </List>
-      <Divider />
-      <List>
-        {['All mail', 'Trash', 'Spam'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>
-              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-            </ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
+      {/*<Divider />*/}
+      {/*<List>*/}
+      {/*  {['All mail', 'Trash', 'Spam'].map((text, index) => (*/}
+      {/*    <ListItem button key={text}>*/}
+      {/*      <ListItemIcon>*/}
+      {/*        {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}*/}
+      {/*      </ListItemIcon>*/}
+      {/*      <ListItemText primary={text} />*/}
+      {/*    </ListItem>*/}
+      {/*  ))}*/}
+      {/*</List>*/}
     </div>
   );
 
   const container =
     window !== undefined ? () => window.document.body : undefined;
 
-  return (
+  return applyRouter(
     <div className={classes.root}>
       <Helmet>
         <title>{documentTitle}</title>
@@ -204,7 +232,9 @@ function App() {
               </Menu>
             </div>
           ) : (
-            <Button color="inherit">Login</Button>
+            <Button color="inherit" component={Link} to={loginPath}>
+              Login
+            </Button>
           )}
         </Toolbar>
       </AppBar>

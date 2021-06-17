@@ -5,11 +5,7 @@ import {
   setAccessToken,
 } from '../../app/api';
 import { User } from '../../models/user';
-
-export interface Credentials {
-  email: string;
-  password: string;
-}
+import { Credentials } from './types';
 
 export interface Tokens {
   accessToken: string;

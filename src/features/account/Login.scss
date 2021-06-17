@@ -1,0 +1,19 @@
+.AppLogin > {
+  .MuiLinearProgress-root.hidden {
+    visibility: hidden;
+  }
+
+  .container {
+    padding: 1rem;
+
+    > {
+      .MuiTextField-root {
+        width: 100%;
+      }
+
+      :not(:last-child) {
+        margin-bottom: 1rem;
+      }
+    }
+  }
+}
