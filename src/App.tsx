@@ -6,13 +6,18 @@ import {
   useTheme,
 } from '@material-ui/core';
 import { ExitToApp } from '@material-ui/icons';
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, useEffect } from 'react';
 import { map } from 'rxjs/operators';
 import { useAppSelector } from './app/hooks';
 import { logger } from './app/logger';
 import { getState$, store } from './app/store';
 import { selectAppBarTitle, selectDocumentTitle } from './app/titlesSlice';
-import { isLoggedIn, logoutAction } from './features/account/accountSlice';
+import {
+  fetchAccount,
+  isLoggedIn,
+  logout,
+} from './features/account/accountSlice';
+import { asEffectReset } from './lib/rx';
 import { Nullable } from './lib/types';
 import { Helmet } from 'react-helmet';
 import './App.scss';
@@ -101,23 +106,36 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+if (isLoggedIn(store.getState())) {
+  store.dispatch(fetchAccount());
+}
+
 function App() {
-  logger.debug('exec app');
   const classes = useStyles();
   const theme = useTheme();
 
   const [appBarTitle, setAppBarTitle] = React.useState(
     useAppSelector(selectAppBarTitle)
   );
-  getState$().pipe(map(selectAppBarTitle)).subscribe(setAppBarTitle);
+  useEffect(() =>
+    asEffectReset(
+      getState$().pipe(map(selectAppBarTitle)).subscribe(setAppBarTitle)
+    )
+  );
 
   const [documentTitle, setDocumentTitle] = React.useState(
     useAppSelector(selectDocumentTitle)
   );
-  getState$().pipe(map(selectDocumentTitle)).subscribe(setDocumentTitle);
+  useEffect(() =>
+    asEffectReset(
+      getState$().pipe(map(selectDocumentTitle)).subscribe(setDocumentTitle)
+    )
+  );
 
   const [auth, setAuth] = React.useState(useAppSelector(isLoggedIn));
-  getState$().pipe(map(isLoggedIn)).subscribe(setAuth);
+  useEffect(() =>
+    asEffectReset(getState$().pipe(map(isLoggedIn)).subscribe(setAuth))
+  );
 
   const [anchorEl, setAnchorEl] = React.useState<Nullable<HTMLElement>>(null);
   const open = Boolean(anchorEl);
@@ -129,13 +147,12 @@ function App() {
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
-    logger.info('menue open', event);
   };
   const handleClose = () => {
     setAnchorEl(null);
   };
   const handleLogout = () => {
-    store.dispatch(logoutAction());
+    store.dispatch(logout());
     handleClose();
   };
 

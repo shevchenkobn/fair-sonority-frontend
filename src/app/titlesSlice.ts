@@ -32,8 +32,14 @@ const titlesSlice = createSlice({
   initialState,
   reducers: {
     setTitle(state, action: ActionWithPayload<string>) {
-      state.appBarTitle = formatAppBarTitle(action.payload);
-      state.documentTitle = formatDocumentTitle(action.payload);
+      const appBarTitle = formatAppBarTitle(action.payload);
+      if (state.appBarTitle !== appBarTitle) {
+        state.appBarTitle = appBarTitle;
+      }
+      const documentTitle = formatDocumentTitle(action.payload);
+      if (state.documentTitle !== documentTitle) {
+        state.documentTitle = documentTitle;
+      }
     },
   },
 });

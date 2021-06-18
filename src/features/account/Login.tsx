@@ -38,7 +38,7 @@ export function Login({ onCredentialsChange }: LoginProps) {
     setPasswordError(getPasswordError(password));
     if (!emailError && !passwordError) {
       setLoading(true);
-      onCredentialsChange({ email, password }).catch(() => {
+      onCredentialsChange({ username: email, password }).catch(() => {
         setLoading(false);
       });
     }

@@ -35,11 +35,11 @@ export function deleteAccessToken() {
 }
 
 api.interceptors.request.use((config) => {
-  logger.debug('axios req', config);
+  logger.info('request', config);
   if (iterate(excludedPaths).some((p) => config.url == p)) {
     return config;
   }
-  if (hasAccessToken()) {
+  if (!hasAccessToken()) {
     logger.warn('Request requires access token:', config);
     return config;
   }
