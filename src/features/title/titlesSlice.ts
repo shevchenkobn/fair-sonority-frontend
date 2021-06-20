@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import {
+  ActionType,
   ActionWithPayload,
   RootState,
   StoreSliceName,
@@ -35,7 +36,7 @@ const titlesSlice = createSlice({
   name: StoreSliceName.Titles,
   initialState,
   reducers: {
-    setTitle(state, action: ActionWithPayload<string>) {
+    [ActionType.SetTitle](state, action: ActionWithPayload<string>) {
       const appBarTitle = formatAppBarTitle(action.payload);
       if (state.appTitle !== appBarTitle) {
         state.appTitle = appBarTitle;

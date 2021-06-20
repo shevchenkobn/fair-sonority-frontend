@@ -14,9 +14,14 @@ import { isNotProduction } from './lib/config';
 import { store } from './store';
 import reportWebVitals from './reportWebVitals';
 
-const theme = (
-  isNotProduction() ? unstable_createMuiStrictModeTheme : createMuiTheme
-)();
+/**
+ * Breaks Snackbar, but fixes findDOMNode warnings
+ * Add filter `-/Warning:\sfindDOMNode/` to Chrome Console filter not to keep distracted.
+ */
+// const theme = (
+//   isNotProduction() ? unstable_createMuiStrictModeTheme : createMuiTheme
+// )();
+const theme = createMuiTheme();
 
 ReactDOM.render(
   <React.StrictMode>

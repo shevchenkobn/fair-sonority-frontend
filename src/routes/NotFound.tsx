@@ -1,7 +1,14 @@
+import { useEffect } from 'react';
 import { useLocation } from 'react-router';
+import { setTitle } from '../features/title/titlesSlice';
+import { store } from '../store';
 
 export function NotFound() {
   const location = useLocation();
+
+  useEffect(() => {
+    store.dispatch(setTitle('Not Found'));
+  }, []);
 
   return (
     <>

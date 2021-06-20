@@ -22,11 +22,17 @@ export enum ActionType {
   Login = 'login',
   Account = 'account',
   Logout = 'logout',
+
+  SetTitle = 'setTitle',
+
+  Show = 'show',
+  Hide = 'hide',
 }
 
 export enum StoreSliceName {
   Account = 'account',
   Titles = 'titles',
+  Snackbar = 'snackbar',
 }
 
 export function createFullActionType(

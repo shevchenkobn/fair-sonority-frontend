@@ -34,15 +34,19 @@ export function Login({ onCredentialsChange }: LoginProps) {
   };
 
   const handleFormSubmit: FormEventHandler<HTMLFormElement> = (event) => {
-    setEmailError(getEmailError(email));
-    setPasswordError(getPasswordError(password));
+    event.preventDefault();
+    const [emailError, passwordError] = [
+      getEmailError(email),
+      getPasswordError(password),
+    ];
+    setEmailError(emailError);
+    setPasswordError(passwordError);
     if (!emailError && !passwordError) {
       setLoading(true);
       onCredentialsChange({ username: email, password }).catch(() => {
         setLoading(false);
       });
     }
-    event.preventDefault();
   };
 
   return (
@@ -55,7 +59,6 @@ export function Login({ onCredentialsChange }: LoginProps) {
           onBlur={handleEmailValidation}
           error={!!emailError}
           disabled={loading}
-          required
           id="email"
           label="Email"
           type="email"
@@ -68,7 +71,6 @@ export function Login({ onCredentialsChange }: LoginProps) {
           onBlur={handlePasswordValidation}
           error={!!passwordError}
           disabled={loading}
-          required
           id="password"
           label="Password"
           type="password"

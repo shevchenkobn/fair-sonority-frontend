@@ -13,8 +13,9 @@ export interface RouteGuard {
 
 export function GuardedRoute(props: Route<RouteGuard>['props']) {
   const [auth, setAuth] = React.useState(useAppSelector(isLoggedIn));
-  useEffect(() =>
-    asEffectReset(getState$().pipe(map(isLoggedIn)).subscribe(setAuth))
+  useEffect(
+    () => asEffectReset(getState$().pipe(map(isLoggedIn)).subscribe(setAuth)),
+    []
   );
   const logInRequired = 'auth' in props ? !!props.auth : true;
   const routeProps = { ...props } as Record<string, any>;

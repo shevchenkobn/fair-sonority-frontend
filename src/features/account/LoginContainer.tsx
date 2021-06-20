@@ -2,6 +2,7 @@ import { Snackbar } from '@material-ui/core';
 import React, { useEffect } from 'react';
 import { Alert } from '../../app/Alert';
 import { store } from '../../store';
+import { showSnackbar } from '../snackbar/snackbarSlice';
 import { setTitle } from '../title/titlesSlice';
 import { dispatchWithError } from '../../store/lib';
 import { fetchAccount, login } from './accountSlice';
@@ -10,7 +11,7 @@ import { Login, LoginProps } from './Login';
 export function LoginContainer() {
   useEffect(() => {
     store.dispatch(setTitle('Login'));
-  });
+  }, []);
 
   const [errorMessage, setErrorMessage] = React.useState('');
   const handleErrorClose = (event?: React.SyntheticEvent, reason?: string) => {
@@ -26,17 +27,15 @@ export function LoginContainer() {
   ) => {
     return dispatchWithError(login(credentials))
       .then(() => store.dispatch(fetchAccount()))
-      .tapCatch((error) => setErrorMessage(error.message)) as Promise<void>;
+      .tapCatch((error) =>
+        store.dispatch(
+          showSnackbar({
+            content: 'Login: ' + error.message,
+            severity: 'error',
+          })
+        )
+      ) as Promise<void>;
   };
 
-  return (
-    <>
-      <Snackbar open={!!errorMessage} onClose={handleErrorClose}>
-        <Alert severity="error" onClose={handleErrorClose}>
-          {errorMessage}
-        </Alert>
-      </Snackbar>
-      <Login onCredentialsChange={handleCredentialsChange} />
-    </>
-  );
+  return <Login onCredentialsChange={handleCredentialsChange} />;
 }

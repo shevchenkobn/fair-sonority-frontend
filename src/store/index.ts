@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { Subject } from 'rxjs';
 import { logger } from '../app/logger';
 import accountReducer from '../features/account/accountSlice';
+import snackbarSlice from '../features/snackbar/snackbarSlice';
 import titlesSlice from '../features/title/titlesSlice';
 import { Nullable } from '../lib/types';
 import { RootState, StoreSliceName } from './constant-lib';
@@ -10,6 +11,7 @@ export const store = configureStore({
   reducer: {
     [StoreSliceName.Account]: accountReducer,
     [StoreSliceName.Titles]: titlesSlice,
+    [StoreSliceName.Snackbar]: snackbarSlice,
   },
 });
 

@@ -10,6 +10,8 @@ import React, { CSSProperties, useEffect } from 'react';
 import { map } from 'rxjs/operators';
 import { useAppSelector } from './app/hooks';
 import { logger } from './app/logger';
+import { AppSnackbar } from './features/snackbar/AppSnackbar';
+import { showSnackbar } from './features/snackbar/snackbarSlice';
 import { AppTitle } from './features/title/AppTitle';
 import { DocumentTitle } from './features/title/DocumentTitle';
 import { getState$, store } from './store';
@@ -42,6 +44,7 @@ import { applyRouter, AppRoutes } from './routes/AppRoutes';
 import logo from './logo.svg';
 import { Link } from 'react-router-dom';
 import { loginPath } from './routes/constants';
+import { dispatchWithError } from './store/lib';
 
 const drawerWidth = 240;
 
@@ -106,18 +109,27 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-if (isLoggedIn(store.getState())) {
-  store.dispatch(fetchAccount());
-}
-
 function App() {
   const classes = useStyles();
   const theme = useTheme();
 
   const [auth, setAuth] = React.useState(useAppSelector(isLoggedIn));
-  useEffect(() =>
-    asEffectReset(getState$().pipe(map(isLoggedIn)).subscribe(setAuth))
+  useEffect(
+    () => asEffectReset(getState$().pipe(map(isLoggedIn)).subscribe(setAuth)),
+    []
   );
+  useEffect(() => {
+    if (isLoggedIn(store.getState())) {
+      dispatchWithError(fetchAccount()).catch((error) => {
+        store.dispatch(
+          showSnackbar({
+            content: 'Failed to load profile: ' + error.message,
+            severity: 'error',
+          })
+        );
+      });
+    }
+  }, []);
 
   const [anchorEl, setAnchorEl] = React.useState<Nullable<HTMLElement>>(null);
   const open = Boolean(anchorEl);
@@ -183,6 +195,7 @@ function App() {
     <div className={classes.root}>
       <DocumentTitle />
       <CssBaseline />
+      <AppSnackbar />
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
           <IconButton

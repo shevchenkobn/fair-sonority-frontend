@@ -9,10 +9,12 @@ export function AppTitle() {
   const [appBarTitle, setAppBarTitle] = React.useState(
     useAppSelector(selectAppTitle)
   );
-  useEffect(() =>
-    asEffectReset(
-      getState$().pipe(map(selectAppTitle)).subscribe(setAppBarTitle)
-    )
+  useEffect(
+    () =>
+      asEffectReset(
+        getState$().pipe(map(selectAppTitle)).subscribe(setAppBarTitle)
+      ),
+    []
   );
 
   return <>{appBarTitle}</>;

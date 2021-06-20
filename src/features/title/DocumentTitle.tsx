@@ -9,15 +9,17 @@ export function DocumentTitle() {
   const [documentTitle, setDocumentTitle] = React.useState(
     useAppSelector(selectDocumentTitle)
   );
-  useEffect(() =>
-    asEffectReset(
-      getState$()
-        .pipe(map(selectDocumentTitle))
-        .subscribe((title) => {
-          document.title = title;
-          setDocumentTitle(title);
-        })
-    )
+  useEffect(
+    () =>
+      asEffectReset(
+        getState$()
+          .pipe(map(selectDocumentTitle))
+          .subscribe((title) => {
+            document.title = title;
+            setDocumentTitle(title);
+          })
+      ),
+    []
   );
 
   return <></>;

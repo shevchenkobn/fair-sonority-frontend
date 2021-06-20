@@ -107,12 +107,10 @@ const accountSlice = createSlice({
   },
 });
 
-export const performLogout = () => {
+export const logout = () => {
   logoutApi();
   return accountSlice.actions.logout();
 };
-
-export const { logout } = accountSlice.actions;
 
 export default accountSlice.reducer;
 
