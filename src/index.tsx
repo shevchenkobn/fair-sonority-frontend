@@ -11,6 +11,7 @@ import './index.scss';
 import { Provider } from 'react-redux';
 import App from './App';
 import { isNotProduction } from './lib/config';
+import { applyRouter } from './routes/AppRoutes';
 import { store } from './store';
 import reportWebVitals from './reportWebVitals';
 
@@ -26,9 +27,7 @@ const theme = createMuiTheme();
 ReactDOM.render(
   <React.StrictMode>
     <MuiThemeProvider theme={theme}>
-      <Provider store={store}>
-        <App />
-      </Provider>
+      <Provider store={store}>{applyRouter(<App />)}</Provider>
     </MuiThemeProvider>
   </React.StrictMode>,
   document.getElementById('root')

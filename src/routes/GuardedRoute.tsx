@@ -5,7 +5,7 @@ import { useAppSelector } from '../app/hooks';
 import { isLoggedIn } from '../features/account/accountSlice';
 import { asEffectReset } from '../lib/rx';
 import { getState$ } from '../store';
-import { homePath, loginPath } from './constants';
+import { Route as RoutePath } from './lib';
 
 export interface RouteGuard {
   auth: boolean;
@@ -23,6 +23,6 @@ export function GuardedRoute(props: Route<RouteGuard>['props']) {
   return logInRequired === auth ? (
     <Route {...routeProps} />
   ) : (
-    <Redirect to={logInRequired ? loginPath : homePath} />
+    <Redirect to={logInRequired ? RoutePath.Login : RoutePath.Home} />
   );
 }

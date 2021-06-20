@@ -1,5 +1,5 @@
 import {
-  addExcludedPath,
+  addExcludedPaths,
   api,
   deleteAccessToken,
   setAccessToken,
@@ -11,8 +11,8 @@ interface Tokens {
   accessToken: string;
 }
 
-const loginUrl = '/auth/login';
-addExcludedPath(loginUrl);
+const loginUrl = 'auth/login';
+addExcludedPaths(loginUrl);
 export function loginApi(body: Credentials): Promise<Tokens> {
   return api
     .post(loginUrl, body)

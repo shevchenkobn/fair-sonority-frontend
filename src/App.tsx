@@ -31,6 +31,7 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import PersonAdd from '@material-ui/icons/PersonAdd';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -40,10 +41,10 @@ import Hidden from '@material-ui/core/Hidden';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import List from '@material-ui/core/List';
 import MailIcon from '@material-ui/icons/Mail';
-import { applyRouter, AppRoutes } from './routes/AppRoutes';
+import { AppRoutes } from './routes/AppRoutes';
 import logo from './logo.svg';
 import { Link } from 'react-router-dom';
-import { loginPath } from './routes/constants';
+import { isSame, Route } from './routes/lib';
 import { dispatchWithError } from './store/lib';
 
 const drawerWidth = 240;
@@ -158,12 +159,30 @@ function App() {
       <Divider />
       <List>
         {auth ? null : (
-          <ListItem component={Link} button to={loginPath}>
-            <ListItemIcon>
-              <ExitToApp />
-            </ListItemIcon>
-            <ListItemText> Login</ListItemText>
-          </ListItem>
+          <>
+            <ListItem
+              component={Link}
+              button
+              to={Route.Login}
+              selected={isSame(Route.Login)}
+            >
+              <ListItemIcon>
+                <ExitToApp />
+              </ListItemIcon>
+              <ListItemText> Login</ListItemText>
+            </ListItem>
+            <ListItem
+              component={Link}
+              button
+              to={Route.Register}
+              selected={isSame(Route.Register)}
+            >
+              <ListItemIcon>
+                <PersonAdd />
+              </ListItemIcon>
+              <ListItemText> Register</ListItemText>
+            </ListItem>
+          </>
         )}
         {/*{['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (*/}
         {/*  <ListItem button key={text}>*/}
@@ -191,7 +210,7 @@ function App() {
   const container =
     window !== undefined ? () => window.document.body : undefined;
 
-  return applyRouter(
+  return (
     <div className={classes.root}>
       <DocumentTitle />
       <CssBaseline />
@@ -242,7 +261,7 @@ function App() {
               </Menu>
             </div>
           ) : (
-            <Button color="inherit" component={Link} to={loginPath}>
+            <Button color="inherit" component={Link} to={Route.Login}>
               Login
             </Button>
           )}

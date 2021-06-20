@@ -4,8 +4,9 @@ import { useAppSelector } from '../app/hooks';
 import { isLoggedIn } from '../features/account/accountSlice';
 import { LoginContainer } from '../features/account/LoginContainer';
 import { BrowserRouter, Switch, Redirect, Route } from 'react-router-dom';
+import { RegisterContainer } from '../features/users/RegisterContainer';
 import { getState$ } from '../store';
-import { loginPath } from './constants';
+import { Route as RoutePath } from './lib';
 import { NotFound } from './NotFound';
 import { GuardedRoute } from './GuardedRoute';
 
@@ -18,17 +19,23 @@ export function AppRoutes() {
   getState$().pipe(map(isLoggedIn)).subscribe(setAuth);
 
   return (
-    <BrowserRouter>
-      <Switch>
-        <GuardedRoute
-          auth={false}
-          path={loginPath}
-          exact
-          component={LoginContainer}
-        />
-        {auth ? null : <Redirect from="/" exact to={loginPath} />}
-        <Route path="*" component={NotFound} />
-      </Switch>
-    </BrowserRouter>
+    <Switch>
+      <GuardedRoute
+        auth={false}
+        path={RoutePath.Login}
+        exact
+        component={LoginContainer}
+      />
+      <GuardedRoute
+        auth={false}
+        path={RoutePath.Register}
+        exact
+        component={RegisterContainer}
+      />
+      {auth ? null : (
+        <Redirect from={RoutePath.Home} exact to={RoutePath.Login} />
+      )}
+      <Route path="*" component={NotFound} />
+    </Switch>
   );
 }

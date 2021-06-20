@@ -1,7 +1,7 @@
 import { Snackbar } from '@material-ui/core';
 import React, { useEffect } from 'react';
 import { map } from 'rxjs/operators';
-import { Alert } from '../../app/Alert';
+import { Alert } from '../../components/Alert';
 import { useAppSelector } from '../../app/hooks';
 import { asEffectReset } from '../../lib/rx';
 import { getState$, store } from '../../store';

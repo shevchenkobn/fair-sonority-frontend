@@ -1,6 +1,5 @@
 import { Color } from '@material-ui/lab';
 import { createSlice, Draft } from '@reduxjs/toolkit';
-import React from 'react';
 import { Nullable } from '../../lib/types';
 import {
   ActionType,
@@ -9,7 +8,7 @@ import {
   StoreSliceName,
 } from '../../store/constant-lib';
 
-export type StaticContent = string | React.DOMElement<any, any>;
+export type StaticContent = string | JSX.Element;
 export type ContentFactory = () => StaticContent;
 
 export interface Snackbar {

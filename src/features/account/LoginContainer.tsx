@@ -1,6 +1,6 @@
 import { Snackbar } from '@material-ui/core';
 import React, { useEffect } from 'react';
-import { Alert } from '../../app/Alert';
+import { Alert } from '../../components/Alert';
 import { store } from '../../store';
 import { showSnackbar } from '../snackbar/snackbarSlice';
 import { setTitle } from '../title/titlesSlice';

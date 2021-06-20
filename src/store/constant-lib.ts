@@ -18,6 +18,13 @@ export interface ActionWithPayload<T> extends Action<string> {
   payload: T;
 }
 
+export enum StoreSliceName {
+  Account = 'account',
+  Titles = 'titles',
+  Snackbar = 'snackbar',
+  Users = 'users',
+}
+
 export enum ActionType {
   Login = 'login',
   Account = 'account',
@@ -27,12 +34,8 @@ export enum ActionType {
 
   Show = 'show',
   Hide = 'hide',
-}
 
-export enum StoreSliceName {
-  Account = 'account',
-  Titles = 'titles',
-  Snackbar = 'snackbar',
+  Register = 'register',
 }
 
 export function createFullActionType(

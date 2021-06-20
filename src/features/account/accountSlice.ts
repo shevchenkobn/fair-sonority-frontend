@@ -3,7 +3,7 @@ import {
   createSlice,
   SerializedError,
 } from '@reduxjs/toolkit';
-import { ApiCallState, hasAccessToken } from '../../app/api';
+import { ApiCallStateBase, ApiCallStatus, hasAccessToken } from '../../app/api';
 import { invalidState } from '../../app/constants';
 import { Account } from '../../models/user';
 import {
@@ -16,15 +16,13 @@ import {
 import { fetchAccountApi, loginApi, logoutApi } from './accountApi';
 import { Credentials } from './types';
 
-export interface AccountState {
-  status: ApiCallState;
+export interface AccountState extends ApiCallStateBase {
   isLoggedIn: boolean;
   account?: Account;
-  error?: SerializedError;
 }
 
 const initialState: AccountState = {
-  status: ApiCallState.Idle,
+  status: ApiCallStatus.Idle,
   isLoggedIn: hasAccessToken(),
 };
 
@@ -73,27 +71,29 @@ const accountSlice = createSlice({
   extraReducers(builder) {
     builder
       .addCase(login.pending, (state) => {
-        state.status = ApiCallState.Loading;
+        state.status = ApiCallStatus.Loading;
       })
       .addCase(login.rejected, (state, action) => {
-        state.status = ApiCallState.Idle;
+        state.status = ApiCallStatus.Idle;
         state.isLoggedIn = false;
         state.error = action.error;
       })
       .addCase(login.fulfilled, (state) => {
-        state.status = ApiCallState.Idle;
+        state.status = ApiCallStatus.Idle;
         state.isLoggedIn = true;
+        delete state.error;
       })
 
       .addCase(fetchAccount.pending, (state) => {
-        state.status = ApiCallState.Loading;
+        state.status = ApiCallStatus.Loading;
       })
       .addCase(fetchAccount.rejected, (state, action) => {
-        state.status = ApiCallState.Idle;
+        state.status = ApiCallStatus.Idle;
         state.error = action.error;
+        delete state.account;
       })
       .addCase(fetchAccount.fulfilled, (state, action) => {
-        state.status = ApiCallState.Idle;
+        state.status = ApiCallStatus.Idle;
         if (!state.isLoggedIn) {
           delete state.account;
           state.error = {
@@ -101,6 +101,7 @@ const accountSlice = createSlice({
             message: 'Cannot have account when not logged in!',
           };
         } else {
+          delete state.error;
           state.account = action.payload;
         }
       });

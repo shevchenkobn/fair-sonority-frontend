@@ -1,3 +1,4 @@
+import { SerializedError } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { iterate } from 'iterare';
 import { config } from '../lib/config';
@@ -16,8 +17,10 @@ export function setExcludedPaths(paths: Iterable<string>) {
 export function getExcludedPaths(): ReadonlySet<string> {
   return excludedPaths;
 }
-export function addExcludedPath(path: string) {
-  excludedPaths.add(path);
+export function addExcludedPaths(...paths: string[]) {
+  for (const path of paths) {
+    excludedPaths.add(path);
+  }
 }
 
 let accessToken: Nullable<string> =
@@ -46,7 +49,12 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-export enum ApiCallState {
+export enum ApiCallStatus {
   Idle = 'idle',
   Loading = 'loading',
+}
+
+export interface ApiCallStateBase {
+  status: ApiCallStatus;
+  error?: SerializedError;
 }
