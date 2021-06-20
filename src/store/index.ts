@@ -1,28 +1,17 @@
-import { Action, configureStore, ThunkAction } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import { Subject } from 'rxjs';
+import { logger } from '../app/logger';
 import accountReducer from '../features/account/accountSlice';
+import titlesSlice from '../features/title/titlesSlice';
 import { Nullable } from '../lib/types';
-import { logger } from './logger';
-import titlesSlice from './titlesSlice';
+import { RootState, StoreSliceName } from './constant-lib';
 
 export const store = configureStore({
   reducer: {
-    account: accountReducer,
-    titles: titlesSlice,
+    [StoreSliceName.Account]: accountReducer,
+    [StoreSliceName.Titles]: titlesSlice,
   },
 });
-
-export type AppDispatch = typeof store.dispatch;
-export type RootState = ReturnType<typeof store.getState>;
-export type AppThunk<ReturnType = void> = ThunkAction<
-  ReturnType,
-  RootState,
-  unknown,
-  Action<string>
->;
-export interface ActionWithPayload<T> extends Action<string> {
-  payload: T;
-}
 
 let subject: Nullable<Subject<RootState>> = null;
 export function getState$() {

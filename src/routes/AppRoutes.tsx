@@ -1,10 +1,10 @@
 import React from 'react';
 import { map } from 'rxjs/operators';
 import { useAppSelector } from '../app/hooks';
-import { getState$ } from '../app/store';
 import { isLoggedIn } from '../features/account/accountSlice';
 import { LoginContainer } from '../features/account/LoginContainer';
 import { BrowserRouter, Switch, Redirect, Route } from 'react-router-dom';
+import { getState$ } from '../store';
 import { loginPath } from './constants';
 import { NotFound } from './NotFound';
 import { GuardedRoute } from './GuardedRoute';

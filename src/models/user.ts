@@ -3,7 +3,7 @@ export enum UserRole {
   Customer = 'customer',
 }
 
-export interface Me {
+export interface Account {
   role: UserRole;
   userId: string;
   username: string;

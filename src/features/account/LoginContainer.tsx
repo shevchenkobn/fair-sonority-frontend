@@ -1,9 +1,9 @@
 import { Snackbar } from '@material-ui/core';
 import React, { useEffect } from 'react';
 import { Alert } from '../../app/Alert';
-import { store } from '../../app/store';
-import { dispatchWithError } from '../../app/storeUtils';
-import { setTitle } from '../../app/titlesSlice';
+import { store } from '../../store';
+import { setTitle } from '../title/titlesSlice';
+import { dispatchWithError } from '../../store/lib';
 import { fetchAccount, login } from './accountSlice';
 import { Login, LoginProps } from './Login';
 

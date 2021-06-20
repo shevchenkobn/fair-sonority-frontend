@@ -1,18 +1,30 @@
 import './polyfills';
+import {
+  createMuiTheme,
+  MuiThemeProvider,
+  unstable_createMuiStrictModeTheme,
+} from '@material-ui/core';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.scss';
 import { Provider } from 'react-redux';
 import App from './App';
-import { store } from './app/store';
+import { isNotProduction } from './lib/config';
+import { store } from './store';
 import reportWebVitals from './reportWebVitals';
+
+const theme = (
+  isNotProduction() ? unstable_createMuiStrictModeTheme : createMuiTheme
+)();
 
 ReactDOM.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <App />
-    </Provider>
+    <MuiThemeProvider theme={theme}>
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </MuiThemeProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

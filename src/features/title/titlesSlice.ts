@@ -1,9 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { ActionWithPayload, RootState } from './store';
+import {
+  ActionWithPayload,
+  RootState,
+  StoreSliceName,
+} from '../../store/constant-lib';
 
 export interface TitleState {
   documentTitle: string;
-  appBarTitle: string;
+  appTitle: string;
 }
 
 export const projectName = 'FairSonority';
@@ -24,17 +28,17 @@ export function formatAppBarTitle(title: string) {
 
 const initialState: TitleState = {
   documentTitle: defaultTitle,
-  appBarTitle: defaultTitle,
+  appTitle: defaultTitle,
 };
 
 const titlesSlice = createSlice({
-  name: 'titles',
+  name: StoreSliceName.Titles,
   initialState,
   reducers: {
     setTitle(state, action: ActionWithPayload<string>) {
       const appBarTitle = formatAppBarTitle(action.payload);
-      if (state.appBarTitle !== appBarTitle) {
-        state.appBarTitle = appBarTitle;
+      if (state.appTitle !== appBarTitle) {
+        state.appTitle = appBarTitle;
       }
       const documentTitle = formatDocumentTitle(action.payload);
       if (state.documentTitle !== documentTitle) {
@@ -48,6 +52,6 @@ export const { setTitle } = titlesSlice.actions;
 
 export default titlesSlice.reducer;
 
-export const selectAppBarTitle = (state: RootState) => state.titles.appBarTitle;
+export const selectAppTitle = (state: RootState) => state.titles.appTitle;
 export const selectDocumentTitle = (state: RootState) =>
   state.titles.documentTitle;

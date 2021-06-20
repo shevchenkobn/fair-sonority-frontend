@@ -5,16 +5,21 @@ import {
 } from '@reduxjs/toolkit';
 import { ApiCallState, hasAccessToken } from '../../app/api';
 import { invalidState } from '../../app/constants';
-import { RootState } from '../../app/store';
-import { serializeStoreError } from '../../app/storeUtils';
-import { Me } from '../../models/user';
+import { Account } from '../../models/user';
+import {
+  ActionType,
+  createFullActionType,
+  RootState,
+  serializeStoreError,
+  StoreSliceName,
+} from '../../store/constant-lib';
 import { fetchAccountApi, loginApi, logoutApi } from './accountApi';
 import { Credentials } from './types';
 
 export interface AccountState {
   status: ApiCallState;
   isLoggedIn: boolean;
-  account?: Me;
+  account?: Account;
   error?: SerializedError;
 }
 
@@ -24,7 +29,7 @@ const initialState: AccountState = {
 };
 
 export const login = createAsyncThunk(
-  'account/login',
+  createFullActionType(StoreSliceName.Account, ActionType.Login),
   (credentials: Credentials) => {
     return loginApi(credentials);
   },
@@ -34,7 +39,7 @@ export const login = createAsyncThunk(
 );
 
 export const fetchAccount = createAsyncThunk(
-  'account/self',
+  createFullActionType(StoreSliceName.Account, ActionType.Account),
   () => {
     return fetchAccountApi();
   },
@@ -44,13 +49,13 @@ export const fetchAccount = createAsyncThunk(
 );
 
 const accountSlice = createSlice({
-  name: 'account',
+  name: StoreSliceName.Account,
   initialState,
   reducers: {
     // login(state) {
     //   state.isLoggedIn = true;
     // },
-    logout(state) {
+    [ActionType.Logout](state) {
       state.isLoggedIn = false;
     },
     // self(state, action) {

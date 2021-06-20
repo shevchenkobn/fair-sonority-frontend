@@ -2,9 +2,9 @@ import React, { useEffect } from 'react';
 import { Redirect, Route } from 'react-router-dom';
 import { map } from 'rxjs/operators';
 import { useAppSelector } from '../app/hooks';
-import { getState$ } from '../app/store';
 import { isLoggedIn } from '../features/account/accountSlice';
 import { asEffectReset } from '../lib/rx';
+import { getState$ } from '../store';
 import { homePath, loginPath } from './constants';
 
 export interface RouteGuard {

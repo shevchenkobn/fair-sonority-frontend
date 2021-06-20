@@ -35,12 +35,11 @@ export function deleteAccessToken() {
 }
 
 api.interceptors.request.use((config) => {
-  logger.info('request', config);
   if (iterate(excludedPaths).some((p) => config.url == p)) {
     return config;
   }
   if (!hasAccessToken()) {
-    logger.warn('Request requires access token:', config);
+    logger.error('Request requires access token:', config);
     return config;
   }
   config.headers.Authorization = 'Bearer ' + accessToken;

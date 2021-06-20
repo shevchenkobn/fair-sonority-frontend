@@ -1,8 +1,7 @@
-import { AsyncThunkAction, miniSerializeError } from '@reduxjs/toolkit';
+import { AsyncThunkAction } from '@reduxjs/toolkit';
 import { deserializeError } from 'serialize-error';
-import { store } from './store';
+import { store } from './index';
 
-export const serializeStoreError = miniSerializeError;
 export function dispatchWithError<Returned>(
   action: AsyncThunkAction<Returned, any, Record<string, any>>
 ): Promise<Returned> {

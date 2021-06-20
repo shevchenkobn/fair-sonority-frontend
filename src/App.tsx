@@ -10,8 +10,9 @@ import React, { CSSProperties, useEffect } from 'react';
 import { map } from 'rxjs/operators';
 import { useAppSelector } from './app/hooks';
 import { logger } from './app/logger';
-import { getState$, store } from './app/store';
-import { selectAppBarTitle, selectDocumentTitle } from './app/titlesSlice';
+import { AppTitle } from './features/title/AppTitle';
+import { DocumentTitle } from './features/title/DocumentTitle';
+import { getState$, store } from './store';
 import {
   fetchAccount,
   isLoggedIn,
@@ -19,7 +20,6 @@ import {
 } from './features/account/accountSlice';
 import { asEffectReset } from './lib/rx';
 import { Nullable } from './lib/types';
-import { Helmet } from 'react-helmet';
 import './App.scss';
 
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
@@ -114,24 +114,6 @@ function App() {
   const classes = useStyles();
   const theme = useTheme();
 
-  const [appBarTitle, setAppBarTitle] = React.useState(
-    useAppSelector(selectAppBarTitle)
-  );
-  useEffect(() =>
-    asEffectReset(
-      getState$().pipe(map(selectAppBarTitle)).subscribe(setAppBarTitle)
-    )
-  );
-
-  const [documentTitle, setDocumentTitle] = React.useState(
-    useAppSelector(selectDocumentTitle)
-  );
-  useEffect(() =>
-    asEffectReset(
-      getState$().pipe(map(selectDocumentTitle)).subscribe(setDocumentTitle)
-    )
-  );
-
   const [auth, setAuth] = React.useState(useAppSelector(isLoggedIn));
   useEffect(() =>
     asEffectReset(getState$().pipe(map(isLoggedIn)).subscribe(setAuth))
@@ -199,9 +181,7 @@ function App() {
 
   return applyRouter(
     <div className={classes.root}>
-      <Helmet>
-        <title>{documentTitle}</title>
-      </Helmet>
+      <DocumentTitle />
       <CssBaseline />
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
@@ -215,7 +195,7 @@ function App() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            {appBarTitle}
+            <AppTitle />
           </Typography>
           {auth ? (
             <div>
