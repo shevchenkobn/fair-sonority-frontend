@@ -97,3 +97,7 @@ export function as<T>(value: any): value is T {
 }
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export function cast<T>(value: any): asserts value is T {}
+
+export function assertUnreachable(x: never): never {
+  throw new Error("Unreachable code, it won't be thrown");
+}

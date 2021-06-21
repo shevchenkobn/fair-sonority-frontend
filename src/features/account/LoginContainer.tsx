@@ -13,15 +13,6 @@ export function LoginContainer() {
     store.dispatch(setTitle('Login'));
   }, []);
 
-  const [errorMessage, setErrorMessage] = React.useState('');
-  const handleErrorClose = (event?: React.SyntheticEvent, reason?: string) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-
-    setErrorMessage('');
-  };
-
   const handleCredentialsChange: LoginProps['onCredentialsChange'] = (
     credentials
   ) => {

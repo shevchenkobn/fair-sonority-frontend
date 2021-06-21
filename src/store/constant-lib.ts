@@ -36,6 +36,7 @@ export enum ActionType {
   Hide = 'hide',
 
   Register = 'register',
+  RegisterClear = 'register/clear',
 }
 
 export function createFullActionType(

@@ -18,11 +18,13 @@ export function AppSnackbar() {
       ),
     []
   );
-  const content = snackbar
-    ? typeof snackbar.content === 'function'
+  if (!snackbar) {
+    return null;
+  }
+  const content =
+    typeof snackbar.content === 'function'
       ? snackbar.content()
-      : snackbar.content
-    : null;
+      : snackbar.content;
 
   const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
     if (reason === 'clickaway') {
@@ -38,7 +40,7 @@ export function AppSnackbar() {
       open={!!content}
       onClose={handleClose}
     >
-      <Alert severity="error" onClose={handleClose}>
+      <Alert severity={snackbar.severity} onClose={handleClose}>
         {content}
       </Alert>
     </Snackbar>

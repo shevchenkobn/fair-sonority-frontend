@@ -5,6 +5,7 @@
 import { validate as validateEmail } from 'email-validator';
 import React, { Dispatch } from 'react';
 import { ReadonlyGuardedMap } from './map';
+import { cast } from './types';
 
 export type Validator<V> = (value: V) => string;
 
@@ -25,9 +26,12 @@ export const f = <V>(
 
 export const emptyString = () => '';
 
-export type FormState<T> = [T[keyof T], Dispatch<T[keyof T]>][];
+export type FormState<T extends Record<never, unknown>> = [
+  T[keyof T],
+  Dispatch<T[keyof T]>
+][];
 
-export function createState<T>(
+export function createState<T extends Record<never, unknown>>(
   orderedKeys: ReadonlyArray<keyof T>,
   config: ReadonlyGuardedMap<keyof T, FieldConfig<T[keyof T]>>
 ): FormState<T> {
@@ -38,9 +42,28 @@ export function createState<T>(
   return state;
 }
 
+export function createModel<T extends Record<never, unknown>>(
+  orderedKeys: ReadonlyArray<keyof T>,
+  state: FormState<T>
+): T {
+  return updateModel<T, Record<never, unknown>>({}, orderedKeys, state);
+}
+
+export function updateModel<T extends B, B extends Record<never, unknown>>(
+  model: B,
+  orderedKeys: ReadonlyArray<Exclude<keyof T, keyof B>>,
+  state: FormState<Omit<T, keyof B>>
+): T {
+  cast<T>(model);
+  for (let i = 0; i < orderedKeys.length; i += 1) {
+    model[orderedKeys[i]] = state[i][0];
+  }
+  return model;
+}
+
 export type FormErrorsState = [string, Dispatch<any>][];
 
-export function createErrorsState<T>(
+export function createErrorsState<T extends Record<never, unknown>>(
   orderedKeys: ReadonlyArray<keyof T>
 ): FormErrorsState {
   const state = [];
@@ -50,31 +73,40 @@ export function createErrorsState<T>(
   return state;
 }
 
-export function updateValue<T>(
+export function updateValue<T extends Record<never, unknown>>(
+  state: FormState<T>,
   i: number,
-  value: T[keyof T],
-  state: FormState<T>
+  value: T[keyof T]
 ) {
   state[i][1](value);
 }
 
-export function validateValue<T>(
-  orderedKeys: ReadonlyArray<keyof T>,
+export function value<
+  T extends Record<never, unknown>,
+  V extends T[keyof T] = T[keyof T]
+>(state: FormState<T>, i: number): V {
+  return state[i][0] as V;
+}
+
+export function validateValue<T extends Record<never, unknown>>(
+  errorsState: FormErrorsState,
   i: number,
-  config: ReadonlyGuardedMap<keyof T, FieldConfig<T[keyof T]>>,
   value: T[typeof orderedKeys[typeof i]],
-  errorsState: FormErrorsState
-) {
+  orderedKeys: ReadonlyArray<keyof T>,
+  config: ReadonlyGuardedMap<keyof T, FieldConfig<T[keyof T]>>
+): string {
   const error = config.get(orderedKeys[i]).validate(value);
-  if (error) {
-    errorsState[i][1](error);
-  }
+  errorsState[i][1](error);
   return error;
+}
+
+export function error(errorsState: FormErrorsState, i: number): string {
+  return errorsState[i][0];
 }
 
 export type FormFieldErrors = string[];
 
-export function updateErrors<T>(
+export function updateErrors<T extends Record<never, unknown>>(
   orderedKeys: ReadonlyArray<keyof T>,
   config: ReadonlyGuardedMap<keyof T, FieldConfig<T[keyof T]>>,
   errorsState: FormErrorsState,
