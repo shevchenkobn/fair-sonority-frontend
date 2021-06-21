@@ -1,12 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { ApiCallStateBase, ApiCallStatus } from '../../app/api';
+import { User, UserNoId } from '../../models/user';
 import {
   ActionType,
   createFullActionType,
   serializeStoreError,
   StoreSliceName,
 } from '../../store/constant-lib';
-import { User, UserNoId } from '../account/types';
 import { registerApi } from './usersApi';
 
 export interface UserState extends ApiCallStateBase {
@@ -30,7 +30,12 @@ export const register = createAsyncThunk<User, UserNoId>(
 const usersSlice = createSlice({
   name: StoreSliceName.Users,
   initialState,
-  reducers: {},
+  reducers: {
+    [ActionType.RegisterClear]: (state) => {
+      delete state.user;
+      delete state.error;
+    },
+  },
   extraReducers(builder) {
     builder
       .addCase(register.pending, (state) => {
@@ -48,5 +53,7 @@ const usersSlice = createSlice({
       });
   },
 });
+
+export const { 'register/clear': registerClear } = usersSlice.actions;
 
 export default usersSlice.reducer;

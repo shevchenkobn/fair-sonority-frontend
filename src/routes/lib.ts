@@ -6,6 +6,7 @@ export enum Route {
   Login = '/login',
   Home = '/',
   Register = '/register',
+  MyOrders = '/orders',
 }
 
 export function isSame(pathname: string) {

@@ -1,6 +1,5 @@
 import { addExcludedPaths, api } from '../../app/api';
-import { UserRole } from '../../models/user';
-import { UserByRole, UserNoIdByRole } from '../account/types';
+import { UserByRole, UserNoIdByRole, UserRole } from '../../models/user';
 
 const createRegisterUrl = (role: UserRole) => `user/${role}`;
 addExcludedPaths(...Object.values(UserRole).map((s) => createRegisterUrl(s)));

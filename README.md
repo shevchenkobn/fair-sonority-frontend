@@ -48,3 +48,6 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 ## Improvements
 - https://material-ui.com/components/app-bar/#elevate-app-bar
 - https://material-ui.com/components/app-bar/#back-to-top
+
+## TODO
+- wrap all store-related as functions + class wrappers to avoid circular imports

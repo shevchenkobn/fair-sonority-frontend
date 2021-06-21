@@ -4,7 +4,7 @@ import {
   deleteAccessToken,
   setAccessToken,
 } from '../../app/api';
-import { Account } from '../../models/user';
+import { User } from '../../models/user';
 import { Credentials } from './types';
 
 interface Tokens {
@@ -26,6 +26,6 @@ export function logoutApi() {
   deleteAccessToken();
 }
 
-export function fetchAccountApi(): Promise<Account> {
+export function fetchAccountApi(): Promise<User> {
   return api.post('me').then((res) => res.data);
 }

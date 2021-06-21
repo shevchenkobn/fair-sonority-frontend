@@ -6,13 +6,14 @@ import {
   ListItemText,
   useTheme,
 } from '@material-ui/core';
-import { ExitToApp } from '@material-ui/icons';
+import { Assignment, ExitToApp } from '@material-ui/icons';
 import React, { CSSProperties, useEffect } from 'react';
 import { concat, of } from 'rxjs';
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
 import { authorizedError$ } from './app/api';
 import { useAppSelector } from './app/hooks';
 import { logger } from './app/logger';
+import { clearOrders } from './features/orders/ordersSlice';
 import { AppSnackbar } from './features/snackbar/AppSnackbar';
 import { showSnackbar } from './features/snackbar/snackbarSlice';
 import { AppTitle } from './features/title/AppTitle';
@@ -22,6 +23,7 @@ import {
   fetchAccount,
   isLoggedIn,
   logout,
+  logout$,
 } from './features/account/accountSlice';
 import { asEffectReset } from './lib/rx';
 import { Nullable } from './lib/types';
@@ -163,6 +165,15 @@ function App() {
       ),
     []
   );
+  useEffect(
+    () =>
+      asEffectReset(
+        logout$.subscribe(() => {
+          store.dispatch(clearOrders());
+        })
+      ),
+    []
+  );
 
   const [anchorEl, setAnchorEl] = React.useState<Nullable<HTMLElement>>(null);
   const open = Boolean(anchorEl);
@@ -190,7 +201,21 @@ function App() {
       </div>
       <Divider />
       <List>
-        {auth ? null : (
+        {auth ? (
+          <>
+            <ListItem
+              component={Link}
+              button
+              to={Route.MyOrders}
+              selected={isSame(Route.MyOrders)}
+            >
+              <ListItemIcon>
+                <Assignment />
+              </ListItemIcon>
+              <ListItemText> My Orders</ListItemText>
+            </ListItem>
+          </>
+        ) : (
           <>
             <ListItem
               component={Link}
@@ -212,30 +237,11 @@ function App() {
               <ListItemIcon>
                 <PersonAdd />
               </ListItemIcon>
-              <ListItemText> Register</ListItemText>
+              <ListItemText primary="Register" />
             </ListItem>
           </>
         )}
-        {/*{['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (*/}
-        {/*  <ListItem button key={text}>*/}
-        {/*    <ListItemIcon>*/}
-        {/*      {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}*/}
-        {/*    </ListItemIcon>*/}
-        {/*    <ListItemText primary={text} />*/}
-        {/*  </ListItem>*/}
-        {/*))}*/}
       </List>
-      {/*<Divider />*/}
-      {/*<List>*/}
-      {/*  {['All mail', 'Trash', 'Spam'].map((text, index) => (*/}
-      {/*    <ListItem button key={text}>*/}
-      {/*      <ListItemIcon>*/}
-      {/*        {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}*/}
-      {/*      </ListItemIcon>*/}
-      {/*      <ListItemText primary={text} />*/}
-      {/*    </ListItem>*/}
-      {/*  ))}*/}
-      {/*</List>*/}
     </div>
   );
 
@@ -287,7 +293,6 @@ function App() {
                 open={open}
                 onClose={handleClose}
               >
-                <MenuItem onClick={handleClose}>Profile</MenuItem>
                 <MenuItem onClick={handleClose}>My account</MenuItem>
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </Menu>
@@ -334,53 +339,8 @@ function App() {
         <div className={classes.toolbar} />
         <LinearProgress className={loading ? '' : 'hidden'} />
         <AppRoutes />
-        {/*<Typography paragraph>*/}
-        {/*  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do*/}
-        {/*  eiusmod tempor incididunt ut labore et dolore magna aliqua. Rhoncus*/}
-        {/*  dolor purus non enim praesent elementum facilisis leo vel. Risus at*/}
-        {/*  ultrices mi tempus imperdiet. Semper risus in hendrerit gravida rutrum*/}
-        {/*  quisque non tellus. Convallis convallis tellus id interdum velit*/}
-        {/*  laoreet id donec ultrices. Odio morbi quis commodo odio aenean sed*/}
-        {/*  adipiscing. Amet nisl suscipit adipiscing bibendum est ultricies*/}
-        {/*  integer quis. Cursus euismod quis viverra nibh cras. Metus vulputate*/}
-        {/*  eu scelerisque felis imperdiet proin fermentum leo. Mauris commodo*/}
-        {/*  quis imperdiet massa tincidunt. Cras tincidunt lobortis feugiat*/}
-        {/*  vivamus at augue. At augue eget arcu dictum varius duis at consectetur*/}
-        {/*  lorem. Velit sed ullamcorper morbi tincidunt. Lorem donec massa sapien*/}
-        {/*  faucibus et molestie ac.*/}
-        {/*</Typography>*/}
-        {/*<Typography paragraph>*/}
-        {/*  Consequat mauris nunc congue nisi vitae suscipit. Fringilla est*/}
-        {/*  ullamcorper eget nulla facilisi etiam dignissim diam. Pulvinar*/}
-        {/*  elementum integer enim neque volutpat ac tincidunt. Ornare suspendisse*/}
-        {/*  sed nisi lacus sed viverra tellus. Purus sit amet volutpat consequat*/}
-        {/*  mauris. Elementum eu facilisis sed odio morbi. Euismod lacinia at quis*/}
-        {/*  risus sed vulputate odio. Morbi tincidunt ornare massa eget egestas*/}
-        {/*  purus viverra accumsan in. In hendrerit gravida rutrum quisque non*/}
-        {/*  tellus orci ac. Pellentesque nec nam aliquam sem et tortor. Habitant*/}
-        {/*  morbi tristique senectus et. Adipiscing elit duis tristique*/}
-        {/*  sollicitudin nibh sit. Ornare aenean euismod elementum nisi quis*/}
-        {/*  eleifend. Commodo viverra maecenas accumsan lacus vel facilisis. Nulla*/}
-        {/*  posuere sollicitudin aliquam ultrices sagittis orci a.*/}
-        {/*</Typography>*/}
       </main>
     </div>
-    // <div className="App">
-    //   <header className="App-header">
-    //     <img src={logo} className="App-logo" alt="logo" />
-    //     <p>
-    //       Edit <code>src/App.tsx</code> and save to reload.
-    //     </p>
-    //     <a
-    //       className="App-link"
-    //       href="https://reactjs.org"
-    //       target="_blank"
-    //       rel="noopener noreferrer"
-    //     >
-    //       Learn React
-    //     </a>
-    //   </header>
-    // </div>
   );
 }
 

@@ -4,6 +4,7 @@ import jwtDecode, { JwtPayload } from 'jwt-decode';
 import { Subject } from 'rxjs';
 import { config } from '../lib/config';
 import { Nullable } from '../lib/types';
+import { TokenPayload } from '../models/user';
 import { accessTokenKey } from './constants';
 import { logger } from './logger';
 
@@ -36,6 +37,13 @@ export function setAccessToken(token: string) {
 export function deleteAccessToken() {
   accessToken = null;
   localStorage.removeItem(accessTokenKey);
+}
+
+export function getTokenPayload() {
+  if (!accessToken) {
+    throw new TypeError('Token not found!');
+  }
+  return jwtDecode<TokenPayload>(accessToken);
 }
 
 api.interceptors.request.use((config) => {

@@ -34,13 +34,15 @@ import {
 } from '../../lib/forms';
 import { GuardedMap } from '../../lib/map';
 import { cast, t } from '../../lib/types';
-import { UserRole, userRoleLabels, validUserRoles } from '../../models/user';
 import {
   ArtistNoId,
   UserBase,
   UserNoId,
   UserNoIdUnion,
-} from '../account/types';
+  UserRole,
+  userRoleLabels,
+  validUserRoles,
+} from '../../models/user';
 import './Register.scss';
 
 export interface RegisterProps {

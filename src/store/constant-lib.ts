@@ -23,6 +23,7 @@ export enum StoreSliceName {
   Titles = 'titles',
   Snackbar = 'snackbar',
   Users = 'users',
+  Orders = 'orders',
 }
 
 export enum ActionType {
@@ -37,6 +38,11 @@ export enum ActionType {
 
   Register = 'register',
   RegisterClear = 'register/clear',
+
+  Fetch = 'fetch',
+  Create = 'create',
+  UpdateStatus = 'updateStatus',
+  Clear = 'clear',
 }
 
 export function createFullActionType(

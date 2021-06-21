@@ -4,6 +4,7 @@ import { useAppSelector } from '../app/hooks';
 import { isLoggedIn } from '../features/account/accountSlice';
 import { LoginContainer } from '../features/account/LoginContainer';
 import { BrowserRouter, Switch, Redirect, Route } from 'react-router-dom';
+import { OrderListContainer } from '../features/orders/OrderListContainer';
 import { RegisterContainer } from '../features/users/RegisterContainer';
 import { getState$ } from '../store';
 import { Route as RoutePath } from './lib';
@@ -32,7 +33,15 @@ export function AppRoutes() {
         exact
         component={RegisterContainer}
       />
-      {auth ? null : (
+      <GuardedRoute
+        auth={true}
+        path={RoutePath.MyOrders}
+        exact
+        component={OrderListContainer}
+      />
+      {auth ? (
+        <Redirect from={RoutePath.Home} exact to={RoutePath.MyOrders} />
+      ) : (
         <Redirect from={RoutePath.Home} exact to={RoutePath.Login} />
       )}
       <Route path="*" component={NotFound} />

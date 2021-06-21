@@ -1,7 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { Subject } from 'rxjs';
 import { ApiCallStateBase, ApiCallStatus, hasAccessToken } from '../../app/api';
 import { invalidState } from '../../app/constants';
-import { Account } from '../../models/user';
+import { User } from '../../models/user';
 import {
   ActionType,
   createFullActionType,
@@ -14,7 +15,7 @@ import { Credentials } from './types';
 
 export interface AccountState extends ApiCallStateBase {
   isLoggedIn: boolean;
-  account?: Account;
+  account?: User;
 }
 
 const initialState: AccountState = {
@@ -104,8 +105,12 @@ const accountSlice = createSlice({
   },
 });
 
+const logoutSubject = new Subject<void>();
+export const logout$ = logoutSubject.asObservable();
+
 export const logout = () => {
   logoutApi();
+  logoutSubject.next();
   return accountSlice.actions.logout();
 };
 
