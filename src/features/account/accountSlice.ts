@@ -1,8 +1,4 @@
-import {
-  createAsyncThunk,
-  createSlice,
-  SerializedError,
-} from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { ApiCallStateBase, ApiCallStatus, hasAccessToken } from '../../app/api';
 import { invalidState } from '../../app/constants';
 import { Account } from '../../models/user';

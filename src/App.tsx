@@ -8,7 +8,9 @@ import {
 } from '@material-ui/core';
 import { ExitToApp } from '@material-ui/icons';
 import React, { CSSProperties, useEffect } from 'react';
-import { distinctUntilChanged, map } from 'rxjs/operators';
+import { concat, of } from 'rxjs';
+import { distinctUntilChanged, filter, map } from 'rxjs/operators';
+import { authorizedError$ } from './app/api';
 import { useAppSelector } from './app/hooks';
 import { logger } from './app/logger';
 import { AppSnackbar } from './features/snackbar/AppSnackbar';
@@ -120,8 +122,11 @@ function App() {
   useEffect(
     () =>
       asEffectReset(
-        getState$()
-          .pipe(map(isLoggedIn), distinctUntilChanged())
+        concat(
+          of(isLoggedIn(store.getState())),
+          getState$().pipe(map(isLoggedIn))
+        )
+          .pipe(distinctUntilChanged())
           .subscribe((loggedIn) => {
             setAuth(loggedIn);
             if (loggedIn) {
@@ -137,6 +142,23 @@ function App() {
                 })
                 .finally(() => setLoading(false));
             }
+          })
+      ),
+    []
+  );
+  useEffect(
+    () =>
+      asEffectReset(
+        authorizedError$
+          .pipe(filter(() => isLoggedIn(store.getState())))
+          .subscribe(() => {
+            store.dispatch(logout());
+            store.dispatch(
+              showSnackbar({
+                content: 'Your session expired, please, log in again.',
+                severity: 'error',
+              })
+            );
           })
       ),
     []
@@ -163,7 +185,6 @@ function App() {
 
   const drawer = (
     <div>
-      <LinearProgress className={loading ? '' : 'hidden'} />
       <div className={classes.toolbar}>
         <img src={logo} alt="FairSonority" className={classes.logo} />
       </div>
@@ -311,6 +332,7 @@ function App() {
       </nav>
       <main className={classes.content}>
         <div className={classes.toolbar} />
+        <LinearProgress className={loading ? '' : 'hidden'} />
         <AppRoutes />
         {/*<Typography paragraph>*/}
         {/*  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do*/}

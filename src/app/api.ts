@@ -1,6 +1,7 @@
 import { SerializedError } from '@reduxjs/toolkit';
-import axios from 'axios';
-import { iterate } from 'iterare';
+import axios, { AxiosResponse } from 'axios';
+import jwtDecode, { JwtPayload } from 'jwt-decode';
+import { Subject } from 'rxjs';
 import { config } from '../lib/config';
 import { Nullable } from '../lib/types';
 import { accessTokenKey } from './constants';
@@ -38,7 +39,7 @@ export function deleteAccessToken() {
 }
 
 api.interceptors.request.use((config) => {
-  if (iterate(excludedPaths).some((p) => config.url == p)) {
+  if (excludedPaths.has(config.url ?? '')) {
     return config;
   }
   if (!hasAccessToken()) {
@@ -48,6 +49,29 @@ api.interceptors.request.use((config) => {
   config.headers.Authorization = 'Bearer ' + accessToken;
   return config;
 });
+
+const authorizedErrorSubject = new Subject<AxiosResponse>();
+export const authorizedError$ = authorizedErrorSubject.asObservable();
+
+api.interceptors.response.use(
+  (res) => res,
+  (error) => {
+    if (!error?.response) {
+      return error;
+    }
+    const res = error.response as AxiosResponse;
+    if (
+      !getExcludedPaths().has(res.request.url ?? '') &&
+      res.status === 401 &&
+      res.data.message === 'Unauthorized' &&
+      (!accessToken ||
+        (jwtDecode<JwtPayload>(accessToken).exp ?? 0) * 1000 <= Date.now())
+    ) {
+      authorizedErrorSubject.next(res);
+    }
+    return res;
+  }
+);
 
 export enum ApiCallStatus {
   Idle = 'idle',

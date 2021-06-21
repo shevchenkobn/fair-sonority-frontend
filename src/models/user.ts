@@ -18,5 +18,5 @@ export const userRoleLabels = new GuardedMap<UserRole, string>([
 export interface Account {
   role: UserRole;
   userId: string;
-  username: string;
+  email: string;
 }
