@@ -1,5 +1,6 @@
 import {
   Button,
+  LinearProgress,
   ListItem,
   ListItemIcon,
   ListItemText,
@@ -7,7 +8,7 @@ import {
 } from '@material-ui/core';
 import { ExitToApp } from '@material-ui/icons';
 import React, { CSSProperties, useEffect } from 'react';
-import { map } from 'rxjs/operators';
+import { distinctUntilChanged, map } from 'rxjs/operators';
 import { useAppSelector } from './app/hooks';
 import { logger } from './app/logger';
 import { AppSnackbar } from './features/snackbar/AppSnackbar';
@@ -115,22 +116,31 @@ function App() {
   const theme = useTheme();
 
   const [auth, setAuth] = React.useState(useAppSelector(isLoggedIn));
+  const [loading, setLoading] = React.useState(false);
   useEffect(
-    () => asEffectReset(getState$().pipe(map(isLoggedIn)).subscribe(setAuth)),
+    () =>
+      asEffectReset(
+        getState$()
+          .pipe(map(isLoggedIn), distinctUntilChanged())
+          .subscribe((loggedIn) => {
+            setAuth(loggedIn);
+            if (loggedIn) {
+              setLoading(true);
+              dispatchWithError(fetchAccount())
+                .catch((error) => {
+                  store.dispatch(
+                    showSnackbar({
+                      content: 'Failed to load profile: ' + error.message,
+                      severity: 'error',
+                    })
+                  );
+                })
+                .finally(() => setLoading(false));
+            }
+          })
+      ),
     []
   );
-  useEffect(() => {
-    if (isLoggedIn(store.getState())) {
-      dispatchWithError(fetchAccount()).catch((error) => {
-        store.dispatch(
-          showSnackbar({
-            content: 'Failed to load profile: ' + error.message,
-            severity: 'error',
-          })
-        );
-      });
-    }
-  }, []);
 
   const [anchorEl, setAnchorEl] = React.useState<Nullable<HTMLElement>>(null);
   const open = Boolean(anchorEl);
@@ -153,6 +163,7 @@ function App() {
 
   const drawer = (
     <div>
+      <LinearProgress className={loading ? '' : 'hidden'} />
       <div className={classes.toolbar}>
         <img src={logo} alt="FairSonority" className={classes.logo} />
       </div>

@@ -6,6 +6,7 @@ import { showSnackbar } from '../snackbar/snackbarSlice';
 import { setTitle } from '../title/titlesSlice';
 import { dispatchWithError } from '../../store/lib';
 import { fetchAccount, login } from './accountSlice';
+import { showLoginErrorSnackbar } from './lib';
 import { Login, LoginProps } from './Login';
 
 export function LoginContainer() {
@@ -17,15 +18,8 @@ export function LoginContainer() {
     credentials
   ) => {
     return dispatchWithError(login(credentials))
-      .then(() => store.dispatch(fetchAccount()))
-      .tapCatch((error) =>
-        store.dispatch(
-          showSnackbar({
-            content: 'Login: ' + error.message,
-            severity: 'error',
-          })
-        )
-      ) as Promise<void>;
+      .catch(showLoginErrorSnackbar)
+      .then(() => undefined);
   };
 
   return <Login onCredentialsChange={handleCredentialsChange} />;

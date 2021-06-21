@@ -8,5 +8,5 @@ addExcludedPaths(...Object.values(UserRole).map((s) => createRegisterUrl(s)));
 export function registerApi<R extends UserRole = UserRole>(
   user: UserNoIdByRole[R]
 ): Promise<UserByRole[R]> {
-  return api.post(createRegisterUrl(user.role)).then((res) => res.data);
+  return api.post(createRegisterUrl(user.role), user).then((res) => res.data);
 }
