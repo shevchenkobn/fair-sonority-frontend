@@ -1,8 +1,9 @@
 import { Button, LinearProgress, Paper, TextField } from '@material-ui/core';
 import { InputProps as StandardInputProps } from '@material-ui/core/Input/Input';
 import React, { FormEventHandler } from 'react';
+import { getEmailError } from '../../lib/forms';
 import { Credentials } from './types';
-import { validate as validateEmail } from 'email-validator';
+import scss from '../../constants.module.scss';
 import './Login.scss';
 
 export interface LoginProps {
@@ -50,9 +51,9 @@ export function Login({ onCredentialsChange }: LoginProps) {
   };
 
   return (
-    <Paper className="AppLogin">
+    <Paper className={scss.appLoginClass}>
       <LinearProgress className={loading ? '' : 'hidden'} />
-      <form onSubmit={handleFormSubmit} className="container">
+      <form onSubmit={handleFormSubmit} className="form-100-m1">
         <TextField
           value={email}
           onChange={handleEmailChange}
@@ -88,12 +89,6 @@ export function Login({ onCredentialsChange }: LoginProps) {
       </form>
     </Paper>
   );
-}
-
-function getEmailError(email: string) {
-  return validateEmail(email)
-    ? ''
-    : 'Email must be valid, e.g. username@domain.com';
 }
 
 function getPasswordError(password: string) {

@@ -22,7 +22,7 @@ import {
 } from './features/account/accountSlice';
 import { asEffectReset } from './lib/rx';
 import { Nullable } from './lib/types';
-import './App.scss';
+import './styles.scss';
 
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';

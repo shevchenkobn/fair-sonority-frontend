@@ -2,8 +2,8 @@
  * @param value the value of the input
  * @returns error error message
  */
-import React from 'react';
-import { Dispatch } from 'react';
+import { validate as validateEmail } from 'email-validator';
+import React, { Dispatch } from 'react';
 import { ReadonlyGuardedMap } from './map';
 
 export type Validator<V> = (value: V) => string;
@@ -28,12 +28,12 @@ export const emptyString = () => '';
 export type FormState<T> = [T[keyof T], Dispatch<T[keyof T]>][];
 
 export function createState<T>(
-  keys: ReadonlyArray<keyof T>,
+  orderedKeys: ReadonlyArray<keyof T>,
   config: ReadonlyGuardedMap<keyof T, FieldConfig<T[keyof T]>>
 ): FormState<T> {
   const state = [];
-  for (let i = 0; i < keys.length; i += 1) {
-    state[i] = React.useState(config.get(keys[i]).getDefaultValue());
+  for (let i = 0; i < orderedKeys.length; i += 1) {
+    state[i] = React.useState(config.get(orderedKeys[i]).getDefaultValue());
   }
   return state;
 }
@@ -41,10 +41,10 @@ export function createState<T>(
 export type FormErrorsState = [string, Dispatch<any>][];
 
 export function createErrorsState<T>(
-  keys: ReadonlyArray<keyof T>
+  orderedKeys: ReadonlyArray<keyof T>
 ): FormErrorsState {
   const state = [];
-  for (let i = 0; i < keys.length; i += 1) {
+  for (let i = 0; i < orderedKeys.length; i += 1) {
     state[i] = React.useState('');
   }
   return state;
@@ -59,13 +59,13 @@ export function updateValue<T>(
 }
 
 export function validateValue<T>(
-  keys: ReadonlyArray<keyof T>,
+  orderedKeys: ReadonlyArray<keyof T>,
   i: number,
   config: ReadonlyGuardedMap<keyof T, FieldConfig<T[keyof T]>>,
-  value: T[typeof keys[typeof i]],
+  value: T[typeof orderedKeys[typeof i]],
   errorsState: FormErrorsState
 ) {
-  const error = config.get(keys[i]).validate(value);
+  const error = config.get(orderedKeys[i]).validate(value);
   if (error) {
     errorsState[i][1](error);
   }
@@ -75,14 +75,14 @@ export function validateValue<T>(
 export type FormFieldErrors = string[];
 
 export function updateErrors<T>(
-  keys: ReadonlyArray<keyof T>,
+  orderedKeys: ReadonlyArray<keyof T>,
   config: ReadonlyGuardedMap<keyof T, FieldConfig<T[keyof T]>>,
   errorsState: FormErrorsState,
   state: FormState<T>
 ): FormFieldErrors {
   const errors = [];
-  for (let i = 0; i < keys.length; i += 1) {
-    const key = keys[i];
+  for (let i = 0; i < orderedKeys.length; i += 1) {
+    const key = orderedKeys[i];
     const value = state[i][0];
     const error = config.get(key).validate(value);
     errors[i] = error;
@@ -94,3 +94,9 @@ export function updateErrors<T>(
 }
 
 export const hasErrors = (errors: FormFieldErrors) => errors.some((e) => !!e);
+
+export function getEmailError(email: string) {
+  return validateEmail(email)
+    ? ''
+    : 'Email must be valid, e.g. username@domain.com';
+}
