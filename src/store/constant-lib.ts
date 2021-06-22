@@ -41,7 +41,7 @@ export enum ActionType {
 
   Fetch = 'fetch',
   Create = 'create',
-  UpdateStatus = 'updateStatus',
+  Update = 'update',
   Clear = 'clear',
 }
 

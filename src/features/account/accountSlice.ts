@@ -105,12 +105,8 @@ const accountSlice = createSlice({
   },
 });
 
-const logoutSubject = new Subject<void>();
-export const logout$ = logoutSubject.asObservable();
-
 export const logout = () => {
   logoutApi();
-  logoutSubject.next();
   return accountSlice.actions.logout();
 };
 

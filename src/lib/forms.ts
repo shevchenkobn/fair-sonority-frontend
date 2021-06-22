@@ -132,3 +132,12 @@ export function getEmailError(email: string) {
     ? ''
     : 'Email must be valid, e.g. username@domain.com';
 }
+
+export function getUrlError(url: string) {
+  try {
+    new URL(url);
+    return '';
+  } catch {
+    return 'URL must be valid, e.g. https://youtu.be/dQw4w9WgXcQ';
+  }
+}
