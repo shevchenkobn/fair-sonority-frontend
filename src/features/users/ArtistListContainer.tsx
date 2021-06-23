@@ -15,20 +15,11 @@ export function ArtistListContainer() {
 
   const [loading, setLoading] = React.useState(false);
   useEffect(() => {
-    setLoading(true);
-    dispatchWithError(fetchArtists())
-      .catch((error) => {
-        store.dispatch(
-          showSnackbar({
-            content: 'Artists loading failed: ' + error.message,
-            severity: 'error',
-          })
-        );
-      })
-      .finally(() => setLoading(false));
+    loadArtists();
   }, []);
 
   const handleOrderCreate: ArtistListProps['onOrderCreate'] = (order) => {
+    setLoading(true);
     return dispatchWithError(createOrder(order))
       .tapCatch((error) => {
         store.dispatch(
@@ -44,6 +35,7 @@ export function ArtistListContainer() {
   const handleArtistRatingCreate: ArtistListProps['onRatingCreate'] = (
     rating
   ) => {
+    setLoading(true);
     return dispatchWithError(createArtistRating(rating))
       .tapCatch((error) => {
         store.dispatch(
@@ -53,8 +45,13 @@ export function ArtistListContainer() {
           })
         );
       })
-      .then(() => undefined)
+      .then(() => loadArtists())
       .finally(() => setLoading(false));
+    // return Promise.delay(2000)
+    //   .then(() => {
+    //     throw new Error();
+    //   })
+    //   .finally(() => setLoading(false)) as Promise<void>;
   };
 
   return (
@@ -65,4 +62,18 @@ export function ArtistListContainer() {
       onRatingCreate={handleArtistRatingCreate}
     />
   );
+
+  function loadArtists() {
+    setLoading(true);
+    dispatchWithError(fetchArtists())
+      .catch((error) => {
+        store.dispatch(
+          showSnackbar({
+            content: 'Artists loading failed: ' + error.message,
+            severity: 'error',
+          })
+        );
+      })
+      .finally(() => setLoading(false));
+  }
 }

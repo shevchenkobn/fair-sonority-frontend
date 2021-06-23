@@ -66,7 +66,6 @@ export function OrderDetails({
       const resultUrlError = getUrlError(resultUrl);
       setResultUrlError(resultUrlError);
       if (!resultUrlError) {
-        setLoading(true);
         orderUpdate = {
           orderId: order.order._id,
           status: OrderStatus.Done,
@@ -74,13 +73,13 @@ export function OrderDetails({
         };
       }
     } else {
-      setLoading(true);
       orderUpdate = {
         orderId: order.order._id,
         status: OrderStatus.InProgress,
       };
     }
     if (orderUpdate) {
+      setLoading(true);
       onOrderUpdate(orderUpdate)
         .then(() => onClose())
         .catch(() => setLoading(false));
@@ -89,7 +88,7 @@ export function OrderDetails({
 
   const handleResultUrlChange: StandardInputProps['onChange'] = (event) => {
     setResultUrl(event.target.value);
-    setResultUrlError(event.target.value);
+    setResultUrlError(getUrlError(event.target.value));
   };
   const handleResultUrlValidation: StandardInputProps['onBlur'] = (event) => {
     setResultUrlError(getUrlError(resultUrl));
@@ -211,15 +210,16 @@ export function OrderDetails({
         {role === UserRole.Artist &&
           order.order.status === OrderStatus.InProgress && (
             <TextField
+              className="form-control-100"
               value={resultUrl}
               onChange={handleResultUrlChange}
               onBlur={handleResultUrlValidation}
               error={!!resultUrlError}
               disabled={loading}
-              id="email"
-              label="Email"
-              type="email"
-              autoComplete="email"
+              id="url"
+              label="Result URL"
+              type="url"
+              autoComplete="url"
               helperText={resultUrlError}
             />
           )}
@@ -241,9 +241,9 @@ export function OrderDetails({
 function getButtonName(status: OrderStatus) {
   switch (status) {
     case OrderStatus.Placed:
-      return `Start Order (${orderStatusLabels.get(status)})`;
+      return `Start Order (${orderStatusLabels.get(OrderStatus.InProgress)})`;
     case OrderStatus.InProgress:
-      return `Finish Order (${orderStatusLabels.get(status)})`;
+      return `Finish Order (${orderStatusLabels.get(OrderStatus.Done)})`;
   }
 }
 

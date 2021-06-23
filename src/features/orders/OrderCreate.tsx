@@ -74,6 +74,7 @@ export function OrderCreate({
         orderedKeys as Exclude<keyof OrderSeed, 'artistId'>[],
         formState
       );
+      setLoading(true);
       onOrderCreate(order)
         .then(() => onClose())
         .catch(() => setLoading(false));
@@ -261,6 +262,7 @@ export function OrderCreate({
                         );
                       }
                     }}
+                    disabled={loading}
                     error={!!error(formErrorsState, i)}
                     helperText={error(formErrorsState, i)}
                     minDateMessage="Deadline cannot be in the past"

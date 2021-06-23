@@ -31,7 +31,7 @@ export function OrderListContainer() {
         );
         setLoading(false);
       })
-      .then(() => undefined) as Promise<void>;
+      .then(() => loadOrders()) as Promise<void>;
   };
 
   return (
