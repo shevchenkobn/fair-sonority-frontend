@@ -55,4 +55,5 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 
 ## TODO
 - wrap all store-related as functions + class wrappers to avoid circular imports
+- fix datepicker throwing error when entering values by hand
 - _(maybe)_ use store selectors instead of promise results handling
