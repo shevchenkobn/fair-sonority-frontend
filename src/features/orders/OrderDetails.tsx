@@ -226,11 +226,11 @@ export function OrderDetails({
       </DialogContent>
       <DialogActions>
         {role === UserRole.Artist && isDone(order) && (
-          <Button onClick={handleSubmit} color="secondary">
+          <Button onClick={handleSubmit} color="secondary" disabled={loading}>
             {getButtonName(order.order.status)}
           </Button>
         )}
-        <Button onClick={handleClose} color="primary">
+        <Button onClick={handleClose} color="primary" disabled={loading}>
           Close
         </Button>
       </DialogActions>

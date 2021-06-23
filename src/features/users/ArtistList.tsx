@@ -6,10 +6,11 @@ import { NoteAdd, Visibility } from '@material-ui/icons';
 import { Rating } from '@material-ui/lab';
 import React, { MouseEventHandler } from 'react';
 import { DeepReadonly, DeepReadonlyArray, Nullable } from '../../lib/types';
-import { ArtistFull, RatingSeed } from '../../models/artist';
+import { ArtistFull, countRating, RatingSeed } from '../../models/artist';
 import { OrderSeed } from '../../models/order';
 import { OrderCreate, OrderCreateProps } from '../orders/OrderCreate';
 import { OrderDetailsProps } from '../orders/OrderDetails';
+import { ArtistDetails, ArtistDetailsProps } from './ArtistDetails';
 
 interface TableRow {
   /**
@@ -29,7 +30,7 @@ export interface ArtistListProps {
   artists: DeepReadonlyArray<ArtistFull>;
   disabled: boolean;
   onOrderCreate: OrderCreateProps['onOrderCreate'];
-  onRatingCreate: (rating: RatingSeed) => Promise<void>;
+  onRatingCreate: ArtistDetailsProps['onRatingCreate'];
 }
 
 const useStyles = makeStyles((theme) =>
@@ -59,11 +60,7 @@ export function ArtistList({
   const rows: TableRow[] = artists.map((a) => ({
     id: a._id,
     fullName: `${a.firstName} ${a.lastName} (${a.email})`,
-    rating:
-      a.ratings.length > 0
-        ? a.ratings.reduce((sum, rating) => sum + rating.rating, 0) /
-          a.ratings.length
-        : 0,
+    rating: countRating(a.ratings),
     genres: a.genres.slice(),
     description: a.profileDescription,
     raw: a,
@@ -128,10 +125,15 @@ export function ArtistList({
           <IconButton
             color="primary"
             onClick={params.row.handleForRatingSelect}
+            disabled={disabled}
           >
             <Visibility />
           </IconButton>
-          <IconButton color="primary" onClick={params.row.handleForOrderSelect}>
+          <IconButton
+            color="primary"
+            onClick={params.row.handleForOrderSelect}
+            disabled={disabled}
+          >
             <NoteAdd />
           </IconButton>
         </>
@@ -141,6 +143,9 @@ export function ArtistList({
 
   const handleOrderCreateClose: OrderDetailsProps['onClose'] = () => {
     setOrderArtist(null);
+  };
+  const handleRatingCreateClose: ArtistDetailsProps['onClose'] = () => {
+    setRatingArtist(null);
   };
 
   return (
@@ -170,6 +175,13 @@ export function ArtistList({
           artist={orderArtist}
           onOrderCreate={onOrderCreate}
           onClose={handleOrderCreateClose}
+        />
+      )}
+      {ratingArtist && (
+        <ArtistDetails
+          artist={ratingArtist}
+          onRatingCreate={onRatingCreate}
+          onClose={handleRatingCreateClose}
         />
       )}
     </Paper>

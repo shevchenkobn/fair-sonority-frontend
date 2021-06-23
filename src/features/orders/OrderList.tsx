@@ -85,7 +85,11 @@ export function OrderList({ orders, onOrderUpdate, disabled }: OrderListProps) {
       filterable: false,
       flex: 0.8,
       renderCell: (params) => (
-        <IconButton color="primary" onClick={params.row.handleOrderSelect}>
+        <IconButton
+          color="primary"
+          onClick={params.row.handleOrderSelect}
+          disabled={disabled}
+        >
           <Visibility />
         </IconButton>
       ),

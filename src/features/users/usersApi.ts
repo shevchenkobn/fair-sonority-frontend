@@ -16,5 +16,5 @@ export function fetchArtistsApi(): Promise<ArtistFull[]> {
 }
 
 export function createArtistRatingApi(rating: RatingSeed): Promise<void> {
-  return api.post('api/artist/rating').then(selectData);
+  return api.post('api/artist/rating', rating).then(selectData);
 }

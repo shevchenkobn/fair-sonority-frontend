@@ -277,10 +277,10 @@ export function OrderCreate({
         </form>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleFormSubmit} color="secondary">
+        <Button onClick={handleFormSubmit} color="secondary" disabled={loading}>
           Create Order (Place)
         </Button>
-        <Button onClick={handleClose} color="primary">
+        <Button onClick={handleClose} color="primary" disabled={loading}>
           Close
         </Button>
       </DialogActions>

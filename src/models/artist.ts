@@ -1,3 +1,4 @@
+import { DeepReadonlyArray } from '../lib/types';
 import { Order } from './order';
 import { ArtistNoId, UserId } from './user';
 
@@ -25,3 +26,15 @@ export interface Rating {
    */
   timestamp: string;
 }
+
+export const countRating = (
+  ratings: DeepReadonlyArray<Pick<Rating, 'rating'>>
+) =>
+  ratings.length > 0
+    ? ratings.reduce((sum, rating) => sum + rating.rating, 0) / ratings.length
+    : 0;
+
+export const findRating = (
+  customerId: string,
+  ratings: DeepReadonlyArray<Rating>
+) => ratings.find((r) => r.userId === customerId)?.rating ?? 0;
