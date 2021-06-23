@@ -12,6 +12,7 @@ import {
 } from '@material-ui/core';
 import { InputProps as StandardInputProps } from '@material-ui/core/Input/Input';
 import Typography from '@material-ui/core/Typography';
+import AudioPlayer from 'material-ui-audio-player';
 import ChipInput from 'material-ui-chip-input';
 import React, { MouseEventHandler, useEffect } from 'react';
 import { distinctUntilChanged, map } from 'rxjs/operators';
@@ -202,6 +203,16 @@ export function OrderDetails({
                     {order.order.resultUrl}
                   </Link>
                 </Typography>
+              </Grid>
+              <Grid item xs={12} style={{ marginTop: '2rem' }}>
+                <AudioPlayer
+                  elevation={1}
+                  width="100%"
+                  variation="primary"
+                  download={true}
+                  loop={true}
+                  src={[order.order.resultUrl]}
+                />
               </Grid>
             </>
           )}
