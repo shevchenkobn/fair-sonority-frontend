@@ -14,9 +14,9 @@ export const orderStatusLabels = new Map([
   t(OrderStatus.Done, 'Done'),
 ]) as ReadonlyMap<OrderStatus, string>;
 
-export interface Order {
+export interface OrderDetailed {
   user: OrderUser;
-  order: OrderOrder;
+  order: Order;
 }
 
 export interface OrderSeed {
@@ -27,7 +27,7 @@ export interface OrderSeed {
   date: string;
 }
 
-export interface OrderOrder {
+export interface Order {
   _id: string;
   artistId: string;
   comment: string;
@@ -40,6 +40,10 @@ export interface OrderOrder {
    */
   deadline: string;
   genre: string[];
+  /**
+   * Beats per minute
+   */
+  bpm?: string;
   resultUrl?: string;
   status: OrderStatus;
 }

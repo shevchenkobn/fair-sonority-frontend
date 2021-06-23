@@ -43,6 +43,8 @@ export enum ActionType {
   Create = 'create',
   Update = 'update',
   Clear = 'clear',
+
+  RatingCreate = 'rating/create',
 }
 
 export function createFullActionType(

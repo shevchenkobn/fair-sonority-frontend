@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { map } from 'rxjs/operators';
 import { useAppSelector } from '../app/hooks';
 import { isLoggedIn } from '../features/account/accountSlice';
 import { LoginContainer } from '../features/account/LoginContainer';
 import { BrowserRouter, Switch, Redirect, Route } from 'react-router-dom';
 import { OrderListContainer } from '../features/orders/OrderListContainer';
+import { ArtistListContainer } from '../features/users/ArtistListContainer';
 import { RegisterContainer } from '../features/users/RegisterContainer';
+import { asEffectReset } from '../lib/rx';
+import { UserRole } from '../models/user';
 import { getState$ } from '../store';
 import { Route as RoutePath } from './lib';
 import { NotFound } from './NotFound';
@@ -17,7 +20,10 @@ export const applyRouter = (app: JSX.Element) => (
 
 export function AppRoutes() {
   const [auth, setAuth] = React.useState(useAppSelector(isLoggedIn));
-  getState$().pipe(map(isLoggedIn)).subscribe(setAuth);
+  useEffect(
+    () => asEffectReset(getState$().pipe(map(isLoggedIn)).subscribe(setAuth)),
+    []
+  );
 
   return (
     <Switch>
@@ -38,6 +44,12 @@ export function AppRoutes() {
         path={RoutePath.MyOrders}
         exact
         component={OrderListContainer}
+      />
+      <GuardedRoute
+        authRole={UserRole.Customer}
+        path={RoutePath.Artists}
+        exact
+        component={ArtistListContainer}
       />
       {auth ? (
         <Redirect from={RoutePath.Home} exact to={RoutePath.MyOrders} />

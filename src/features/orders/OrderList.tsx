@@ -9,11 +9,15 @@ import {
   Nullable,
   Optional,
 } from '../../lib/types';
-import { Order, OrderStatus, orderStatusLabels } from '../../models/order';
+import {
+  OrderDetailed,
+  OrderStatus,
+  orderStatusLabels,
+} from '../../models/order';
 import { OrderDetails, OrderDetailsProps } from './OrderDetails';
 
 export interface OrderListProps {
-  orders: DeepReadonlyArray<Order>;
+  orders: DeepReadonlyArray<OrderDetailed>;
   disabled: boolean;
   onOrderUpdate: OrderDetailsProps['onOrderUpdate'];
 }
@@ -27,13 +31,13 @@ interface TableRow {
   status: string;
   deadline: string;
   comment: string;
-  raw: DeepReadonly<Order>;
+  raw: DeepReadonly<OrderDetailed>;
   handleOrderSelect: MouseEventHandler<any>;
 }
 
 export function OrderList({ orders, onOrderUpdate, disabled }: OrderListProps) {
   const [selectedOrder, setSelectedOrder] =
-    React.useState<Nullable<DeepReadonly<Order>>>(null);
+    React.useState<Nullable<DeepReadonly<OrderDetailed>>>(null);
   const rows: TableRow[] = orders.map((o) => ({
     id: o.order._id,
     user: `${o.user.name} ${o.user.lastName} (${o.user.email})`,
@@ -76,6 +80,7 @@ export function OrderList({ orders, onOrderUpdate, disabled }: OrderListProps) {
     },
     {
       field: 'raw',
+      headerName: 'Actions',
       sortable: false,
       filterable: false,
       flex: 0.8,

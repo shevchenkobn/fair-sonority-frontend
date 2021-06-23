@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { ApiCallStateBase, ApiCallStatus } from '../../app/api';
-import { Order, OrderSeed, OrderUpdate } from '../../models/order';
+import { OrderDetailed, OrderSeed, OrderUpdate } from '../../models/order';
 import {
   ActionType,
   ActionWithPayload,
@@ -12,7 +12,7 @@ import {
 import { createOrderApi, fetchOrdersApi, updateOrderApi } from './ordersApi';
 
 export interface OrderState extends ApiCallStateBase {
-  orders?: Order[];
+  orders?: OrderDetailed[];
 }
 
 const initialState: OrderState = {
@@ -63,7 +63,7 @@ const ordersSlice = createSlice({
       })
       .addCase(
         fetchOrders.fulfilled,
-        (state, action: ActionWithPayload<Order[]>) => {
+        (state, action: ActionWithPayload<OrderDetailed[]>) => {
           state.status = ApiCallStatus.Idle;
           state.orders = action.payload;
         }

@@ -11,18 +11,28 @@ export type Validator<V> = (value: V) => string;
 
 export type DefaultValueFactory<V> = () => V;
 
+export type ValueTransfrormer<V> = (formValue: unknown) => V;
+
 export interface FieldConfig<V> {
   validate: Validator<V>;
-  getDefaultValue: DefaultValueFactory<V>;
+  getDefaultValue: DefaultValueFactory<any>;
+  valueTransformer?: ValueTransfrormer<V>;
 }
 
-export const f = <V>(
+export function f<V>(
   validator: Validator<V>,
-  defaultValueFactory: DefaultValueFactory<V>
-): FieldConfig<V> => ({
-  validate: validator,
-  getDefaultValue: defaultValueFactory,
-});
+  defaultValueFactory: DefaultValueFactory<any>,
+  valueTransformer?: ValueTransfrormer<V>
+): FieldConfig<V> {
+  const config: FieldConfig<V> = {
+    validate: validator,
+    getDefaultValue: defaultValueFactory,
+  };
+  if (valueTransformer) {
+    config.valueTransformer = valueTransformer;
+  }
+  return config;
+}
 
 export const emptyString = () => '';
 
@@ -31,12 +41,13 @@ export type FormState<T extends Record<never, unknown>> = [
   Dispatch<T[keyof T]>
 ][];
 
-export function createState<T extends Record<never, unknown>>(
+export function useFormState<T extends Record<never, unknown>>(
   orderedKeys: ReadonlyArray<keyof T>,
   config: ReadonlyGuardedMap<keyof T, FieldConfig<T[keyof T]>>
 ): FormState<T> {
   const state = [];
   for (let i = 0; i < orderedKeys.length; i += 1) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     state[i] = React.useState(config.get(orderedKeys[i]).getDefaultValue());
   }
   return state;
@@ -63,11 +74,12 @@ export function updateModel<T extends B, B extends Record<never, unknown>>(
 
 export type FormErrorsState = [string, Dispatch<any>][];
 
-export function createErrorsState<T extends Record<never, unknown>>(
+export function useFormErrorsState<T extends Record<never, unknown>>(
   orderedKeys: ReadonlyArray<keyof T>
 ): FormErrorsState {
   const state = [];
   for (let i = 0; i < orderedKeys.length; i += 1) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     state[i] = React.useState('');
   }
   return state;
@@ -76,9 +88,12 @@ export function createErrorsState<T extends Record<never, unknown>>(
 export function updateValue<T extends Record<never, unknown>>(
   state: FormState<T>,
   i: number,
-  value: T[keyof T]
+  value: any,
+  orderedKeys: (keyof T)[],
+  config: ReadonlyGuardedMap<keyof T, FieldConfig<T[keyof T]>>
 ) {
-  state[i][1](value);
+  const transformer = config.get(orderedKeys[i]).valueTransformer;
+  state[i][1](transformer ? transformer(value) : value);
 }
 
 export function value<

@@ -101,3 +101,15 @@ export function cast<T>(value: any): asserts value is T {}
 export function assertUnreachable(x: never): never {
   throw new Error("Unreachable code, it won't be thrown");
 }
+
+export type With<K extends keyof any, T = any> = T extends Record<K, infer V>
+  ? Record<K, V> & T
+  : never;
+
+// Doesn't work
+// export function isIn<K extends keyof any, T = any>(
+//   key: K,
+//   obj: T
+// ): obj is With<K, T> {
+//   return key in obj;
+// }

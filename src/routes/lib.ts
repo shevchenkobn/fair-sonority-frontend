@@ -1,5 +1,5 @@
-import { Location } from 'history';
 import { useLocation } from 'react-router';
+import { Location } from 'history';
 import { logger } from '../app/logger';
 
 export enum Route {
@@ -7,15 +7,19 @@ export enum Route {
   Home = '/',
   Register = '/register',
   MyOrders = '/orders',
+  Artists = '/artists',
 }
 
-export function isSame(pathname: string) {
-  let location;
+export function useRouteIsSame() {
+  let location: Location<any>;
+  let isSame: (pathname: string) => boolean;
   try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     location = useLocation();
-    return location.pathname === pathname;
+    isSame = (pathname) => location.pathname === pathname;
   } catch (error) {
     logger.error('No location loaded, probably provider missing:', error);
-    return false;
+    isSame = () => false;
   }
+  return { isSame };
 }

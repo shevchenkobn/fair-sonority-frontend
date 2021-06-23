@@ -5,6 +5,7 @@ import accountReducer from '../features/account/accountSlice';
 import ordersSlice from '../features/orders/ordersSlice';
 import snackbarSlice from '../features/snackbar/snackbarSlice';
 import titlesSlice from '../features/title/titlesSlice';
+import usersSlice from '../features/users/usersSlice';
 import { Nullable } from '../lib/types';
 import { RootState, StoreSliceName } from './constant-lib';
 
@@ -14,6 +15,7 @@ export const store = configureStore({
     [StoreSliceName.Titles]: titlesSlice,
     [StoreSliceName.Snackbar]: snackbarSlice,
     [StoreSliceName.Orders]: ordersSlice,
+    [StoreSliceName.Users]: usersSlice,
   },
 });
 

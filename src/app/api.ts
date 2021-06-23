@@ -59,7 +59,7 @@ api.interceptors.request.use((config) => {
 });
 
 const authorizedErrorSubject = new Subject<AxiosResponse>();
-export const authorizedError$ = authorizedErrorSubject.asObservable();
+export const authorizeError$ = authorizedErrorSubject.asObservable();
 
 api.interceptors.response.use(
   (res) => res,
@@ -89,4 +89,8 @@ export enum ApiCallStatus {
 export interface ApiCallStateBase {
   status: ApiCallStatus;
   error?: SerializedError;
+}
+
+export function selectData<T = any>(response: AxiosResponse<T>) {
+  return response.data;
 }

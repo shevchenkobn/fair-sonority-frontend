@@ -13,18 +13,24 @@ import {
 import { InputProps as StandardInputProps } from '@material-ui/core/Input/Input';
 import Typography from '@material-ui/core/Typography';
 import ChipInput from 'material-ui-chip-input';
-import React, { MouseEventHandler } from 'react';
+import React, { MouseEventHandler, useEffect } from 'react';
+import { distinctUntilChanged, map } from 'rxjs/operators';
+import { useAppSelector } from '../../app/hooks';
 import { getUrlError } from '../../lib/forms';
+import { asEffectReset } from '../../lib/rx';
 import { DeepReadonly, Nullable } from '../../lib/types';
 import {
-  Order,
+  OrderDetailed,
   OrderStatus,
   orderStatusLabels,
   OrderUpdate,
 } from '../../models/order';
+import { UserRole } from '../../models/user';
+import { getState$ } from '../../store';
+import { selectRole } from '../account/accountSlice';
 
 export interface OrderDetailsProps {
-  order: DeepReadonly<Order>;
+  order: DeepReadonly<OrderDetailed>;
   onOrderUpdate(update: OrderUpdate): Promise<void>;
   onClose(): void;
 }
@@ -38,6 +44,16 @@ export function OrderDetails({
   const [loading, setLoading] = React.useState(false);
   const [resultUrl, setResultUrl] = React.useState('');
   const [resultUrlError, setResultUrlError] = React.useState('');
+  const [role, setRole] = React.useState(useAppSelector(selectRole));
+  useEffect(
+    () =>
+      asEffectReset(
+        getState$()
+          .pipe(map(selectRole), distinctUntilChanged())
+          .subscribe(setRole)
+      ),
+    []
+  );
 
   const handleClose = () => {
     setOpen(false);
@@ -80,7 +96,11 @@ export function OrderDetails({
   };
 
   return (
-    <Dialog open={open} onClose={handleClose}>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      disableBackdropClick={loading || !!resultUrl}
+    >
       <DialogTitle>Order #{order.order._id}</DialogTitle>
       <DialogContent>
         <LinearProgress className={loading ? '' : 'hidden'} />
@@ -138,27 +158,34 @@ export function OrderDetails({
           {/*  </Typography>*/}
           {/*</Grid>*/}
           <Grid item xs={12}>
-            <Typography variant="body1">
-              <ChipInput
-                defaultValue={order.order.genre.slice()}
-                readOnly={true}
-                label="Genres"
-                color="primary"
-                chipRenderer={(
-                  { handleDelete, text, className, value },
-                  chipKey
-                ) => (
-                  <Chip
-                    key={chipKey}
-                    label={text}
-                    id={`genre.${value}`}
-                    className={className}
-                    color="primary"
-                  />
-                )}
-              />
-            </Typography>
+            <ChipInput
+              defaultValue={order.order.genre.slice()}
+              readOnly={true}
+              label="Genres"
+              color="primary"
+              chipRenderer={({ text, className, value }, chipKey) => (
+                <Chip
+                  key={chipKey}
+                  label={text}
+                  id={`genre.${value}`}
+                  className={className}
+                  color="primary"
+                />
+              )}
+            />
           </Grid>
+          {order.order.bpm && (
+            <>
+              <Grid item xs={6}>
+                <Typography variant="body1">
+                  <strong>Beats per minute (bpm)</strong>
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="body1">{order.order.bpm}</Typography>
+              </Grid>
+            </>
+          )}
           {order.order.resultUrl && (
             <>
               <Grid item xs={6}>
@@ -181,23 +208,24 @@ export function OrderDetails({
           )}
         </Grid>
 
-        {order.order.status === OrderStatus.InProgress && (
-          <TextField
-            value={resultUrl}
-            onChange={handleResultUrlChange}
-            onBlur={handleResultUrlValidation}
-            error={!!resultUrlError}
-            disabled={loading}
-            id="email"
-            label="Email"
-            type="email"
-            autoComplete="email"
-            helperText={resultUrlError}
-          />
-        )}
+        {role === UserRole.Artist &&
+          order.order.status === OrderStatus.InProgress && (
+            <TextField
+              value={resultUrl}
+              onChange={handleResultUrlChange}
+              onBlur={handleResultUrlValidation}
+              error={!!resultUrlError}
+              disabled={loading}
+              id="email"
+              label="Email"
+              type="email"
+              autoComplete="email"
+              helperText={resultUrlError}
+            />
+          )}
       </DialogContent>
       <DialogActions>
-        {isDone(order) && (
+        {role === UserRole.Artist && isDone(order) && (
           <Button onClick={handleSubmit} color="secondary">
             {getButtonName(order.order.status)}
           </Button>
@@ -219,6 +247,6 @@ function getButtonName(status: OrderStatus) {
   }
 }
 
-function isDone(order: DeepReadonly<Order>) {
+function isDone(order: DeepReadonly<OrderDetailed>) {
   return order.order.status !== OrderStatus.Done;
 }

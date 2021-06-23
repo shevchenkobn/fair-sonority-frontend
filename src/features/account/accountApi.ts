@@ -2,6 +2,7 @@ import {
   addExcludedPaths,
   api,
   deleteAccessToken,
+  selectData,
   setAccessToken,
 } from '../../app/api';
 import { User } from '../../models/user';
@@ -27,5 +28,5 @@ export function logoutApi() {
 }
 
 export function fetchAccountApi(): Promise<User> {
-  return api.post('me').then((res) => res.data);
+  return api.post('me').then(selectData);
 }

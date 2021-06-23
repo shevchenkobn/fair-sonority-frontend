@@ -17,9 +17,9 @@ import React from 'react';
 import { addAsterisk, Asterisk } from '../../components/forms';
 import scss from '../../constants.module.scss';
 import {
-  createErrorsState,
+  useFormErrorsState,
   createModel,
-  createState,
+  useFormState,
   emptyString,
   error,
   f,
@@ -52,19 +52,19 @@ export interface RegisterProps {
 type OptionalUserRole = UserRole | '';
 
 export function Register({ onUserChange }: RegisterProps) {
-  const formState = createState<UserBase>(orderedKeys, formConfig);
-  const formErrorsState = createErrorsState<UserBase>(orderedKeys);
+  const formState = useFormState<UserBase>(orderedKeys, formConfig);
+  const formErrorsState = useFormErrorsState<UserBase>(orderedKeys);
 
   const [userRole, setUserRole] = React.useState<OptionalUserRole>('');
   const [userRoleError, setUserRoleError] = React.useState('');
 
   const [loading, setLoading] = React.useState(false);
 
-  const artistFormState = createState<ArtistOnlyProps>(
+  const artistFormState = useFormState<ArtistOnlyProps>(
     artistOnlyOrderedKeys,
     artistOnlyFormConfig
   );
-  const artistFormErrorsState = createErrorsState(artistOnlyOrderedKeys);
+  const artistFormErrorsState = useFormErrorsState(artistOnlyOrderedKeys);
 
   const handleUserRoleChange: SelectInputProps['onChange'] = (event) => {
     const userRole = event.target.value as OptionalUserRole;
@@ -121,7 +121,13 @@ export function Register({ onUserChange }: RegisterProps) {
             key={key}
             value={value(formState, i)}
             onChange={(event) => {
-              updateValue(formState, i, event.target.value);
+              updateValue(
+                formState,
+                i,
+                event.target.value,
+                orderedKeys,
+                formConfig
+              );
               validateValue(
                 formErrorsState,
                 i,
@@ -187,7 +193,13 @@ export function Register({ onUserChange }: RegisterProps) {
                         i
                       )}
                       onChange={(chips) => {
-                        updateValue(artistFormState, i, chips);
+                        updateValue(
+                          artistFormState,
+                          i,
+                          chips,
+                          artistOnlyOrderedKeys,
+                          artistOnlyFormConfig
+                        );
                         validateValue(
                           artistFormErrorsState,
                           i,
@@ -234,7 +246,13 @@ export function Register({ onUserChange }: RegisterProps) {
                       key={key}
                       value={value(artistFormState, i)}
                       onChange={(event) => {
-                        updateValue(artistFormState, i, event.target.value);
+                        updateValue(
+                          artistFormState,
+                          i,
+                          event.target.value,
+                          artistOnlyOrderedKeys,
+                          artistOnlyFormConfig
+                        );
                         validateValue(
                           artistFormErrorsState,
                           i,

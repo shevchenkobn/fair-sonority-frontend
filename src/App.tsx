@@ -1,5 +1,6 @@
 import {
   Button,
+  Chip,
   LinearProgress,
   ListItem,
   ListItemIcon,
@@ -10,7 +11,7 @@ import { Assignment, ExitToApp } from '@material-ui/icons';
 import React, { CSSProperties, useEffect } from 'react';
 import { concat, of } from 'rxjs';
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
-import { authorizedError$ } from './app/api';
+import { authorizeError$ } from './app/api';
 import { useAppSelector } from './app/hooks';
 import { logger } from './app/logger';
 import { clearOrders } from './features/orders/ordersSlice';
@@ -18,11 +19,13 @@ import { AppSnackbar } from './features/snackbar/AppSnackbar';
 import { showSnackbar } from './features/snackbar/snackbarSlice';
 import { AppTitle } from './features/title/AppTitle';
 import { DocumentTitle } from './features/title/DocumentTitle';
+import { UserRole, userRoleLabels } from './models/user';
 import { getState$, store } from './store';
 import {
   fetchAccount,
   isLoggedIn,
   logout,
+  selectRole,
 } from './features/account/accountSlice';
 import { asEffectReset } from './lib/rx';
 import { Nullable } from './lib/types';
@@ -33,6 +36,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
+import LibraryMusic from '@material-ui/icons/LibraryMusic';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import PersonAdd from '@material-ui/icons/PersonAdd';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -41,13 +45,11 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
 import Hidden from '@material-ui/core/Hidden';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
 import List from '@material-ui/core/List';
-import MailIcon from '@material-ui/icons/Mail';
 import { AppRoutes } from './routes/AppRoutes';
 import logo from './logo.svg';
-import { Link } from 'react-router-dom';
-import { isSame, Route } from './routes/lib';
+import { Link, useHistory } from 'react-router-dom';
+import { useRouteIsSame, Route } from './routes/lib';
 import { dispatchWithError } from './store/lib';
 
 const drawerWidth = 240;
@@ -118,7 +120,9 @@ function App() {
   const theme = useTheme();
 
   const [auth, setAuth] = React.useState(useAppSelector(isLoggedIn));
+  const [role, setRole] = React.useState(useAppSelector(selectRole));
   const [loading, setLoading] = React.useState(false);
+  const history = useHistory();
   useEffect(
     () =>
       asEffectReset(
@@ -143,15 +147,16 @@ function App() {
                 .finally(() => setLoading(false));
             } else {
               store.dispatch(clearOrders());
+              history.push(Route.Home);
             }
           })
       ),
-    []
+    [history]
   );
   useEffect(
     () =>
       asEffectReset(
-        authorizedError$
+        authorizeError$
           .pipe(filter(() => isLoggedIn(store.getState())))
           .subscribe(() => {
             store.dispatch(logout());
@@ -161,6 +166,17 @@ function App() {
                 severity: 'error',
               })
             );
+          })
+      ),
+    []
+  );
+  useEffect(
+    () =>
+      asEffectReset(
+        getState$()
+          .pipe(map(selectRole), distinctUntilChanged())
+          .subscribe((value) => {
+            setRole(value);
           })
       ),
     []
@@ -185,6 +201,7 @@ function App() {
     handleClose();
   };
 
+  const { isSame } = useRouteIsSame();
   const drawer = (
     <div>
       <div className={classes.toolbar}>
@@ -205,6 +222,19 @@ function App() {
               </ListItemIcon>
               <ListItemText> My Orders</ListItemText>
             </ListItem>
+            {role === UserRole.Customer && (
+              <ListItem
+                component={Link}
+                button
+                to={Route.Artists}
+                selected={isSame(Route.Artists)}
+              >
+                <ListItemIcon>
+                  <LibraryMusic />
+                </ListItemIcon>
+                <ListItemText>Artists</ListItemText>
+              </ListItem>
+            )}
           </>
         ) : (
           <>
@@ -260,6 +290,7 @@ function App() {
           </Typography>
           {auth ? (
             <div>
+              {role && <Chip label={userRoleLabels.get(role)} />}
               <IconButton
                 aria-label="account of current user"
                 aria-controls="menu-appbar"

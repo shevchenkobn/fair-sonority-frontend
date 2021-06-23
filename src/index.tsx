@@ -1,9 +1,11 @@
 import './polyfills';
+import DayjsUtils from '@date-io/dayjs';
 import {
   createMuiTheme,
   MuiThemeProvider,
   unstable_createMuiStrictModeTheme,
 } from '@material-ui/core';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -27,7 +29,11 @@ const theme = createMuiTheme();
 ReactDOM.render(
   <React.StrictMode>
     <MuiThemeProvider theme={theme}>
-      <Provider store={store}>{applyRouter(<App />)}</Provider>
+      <Provider store={store}>
+        <MuiPickersUtilsProvider utils={DayjsUtils}>
+          {applyRouter(<App />)}
+        </MuiPickersUtilsProvider>
+      </Provider>
     </MuiThemeProvider>
   </React.StrictMode>,
   document.getElementById('root')

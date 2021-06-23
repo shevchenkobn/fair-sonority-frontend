@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { Subject } from 'rxjs';
 import { ApiCallStateBase, ApiCallStatus, hasAccessToken } from '../../app/api';
 import { invalidState } from '../../app/constants';
+import { Optional } from '../../lib/types';
 import { User } from '../../models/user';
 import {
   ActionType,
@@ -114,6 +115,9 @@ export default accountSlice.reducer;
 
 export const selectAccountError = (state: RootState) => state.account.error;
 
-export const selectAccount = (state: RootState) => state.account;
+export const selectAccount = (state: RootState): Optional<User> =>
+  state.account.account;
+
+export const selectRole = (state: RootState) => selectAccount(state)?.role;
 
 export const isLoggedIn = (state: RootState) => state.account.isLoggedIn;
